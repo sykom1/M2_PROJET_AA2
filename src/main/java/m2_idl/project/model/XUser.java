@@ -15,6 +15,9 @@ import javax.persistence.*;
 public class XUser {
 
 	@Id
+	@GeneratedValue
+	Long id;
+
 	@Column(name = "email")
 	String email;
 

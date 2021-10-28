@@ -5,6 +5,7 @@ import m2_idl.project.model.Activity;
 import m2_idl.project.model.Nature;
 import m2_idl.project.model.XUser;
 import m2_idl.project.model.XUserRole;
+import m2_idl.project.repository.ActivityRepository;
 import m2_idl.project.repository.XUserRepository;
 import m2_idl.project.service.XUserService;
 import org.modelmapper.ModelMapper;
@@ -27,6 +28,9 @@ public class XUserController {
     XUserRepository repo;
 
     @Autowired
+    ActivityRepository activity;
+
+    @Autowired
     XUserService service;
 
 
@@ -34,20 +38,22 @@ public class XUserController {
     void populate(){
         ArrayList<XUser> users = new ArrayList<>();
         if(repo.count() == 0){
-            for(int i = 0;i<100 ;i++){
+            for(int i = 0;i<10 ;i++){
                 XUser xUser = new XUser();
                 xUser.setEmail("User"+i+"@gmail.com");
                 xUser.setPassword("pass");
                 xUser.setBirthday(new Date(1999,3,5));
                 xUser.setRoles(new ArrayList<>(List.of(XUserRole.ROLE_USER)));
                 xUser.setWebsite("https://hello" + i +".com");
-                xUser.setCv(new ArrayList<>(List.of(new Activity("testxp"+i,1999,
-                                Nature.PROFESSIONAL_EXPERIENCES,"desc"+i,"https://blabla"+i+".com"),
-                        new Activity("projects"+i,2000,Nature.PROJECTS))));
+                Activity a1 = new Activity("testxp"+i,1999,
+                        Nature.PROFESSIONAL_EXPERIENCES,"desc"+i,"https://blabla"+i+".com");
+                Activity a2 = new Activity("projects"+i,2000,Nature.PROJECTS);
+                xUser.setCv(new ArrayList<>(List.of(a1,a2)));
 
+                activity.save(a1);
+                activity.save(a2);
                 users.add(xUser);
                 service.signup(xUser,false);
-
             }
         repo.saveAll(users);
         }
@@ -60,16 +66,15 @@ public class XUserController {
 
 
     @GetMapping("/{id}")
-    public XUser getUserById(@PathVariable String id){
+    public XUser getUserById(@PathVariable Long id){
         return repo.findById(id).get();
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void deleteUser(@PathVariable String id) {
+    void deleteUser(@PathVariable Long id) {
         repo.deleteById(id);
     }
-
 
 
     @PostMapping

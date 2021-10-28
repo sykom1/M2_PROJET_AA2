@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @Transactional
-public interface XUserRepository extends JpaRepository<XUser, String> {
+public interface XUserRepository extends JpaRepository<XUser, Long> {
 
      XUser findByEmail(String email);
 
