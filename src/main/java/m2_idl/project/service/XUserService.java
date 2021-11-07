@@ -6,8 +6,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import lombok.RequiredArgsConstructor;
 import m2_idl.project.exception.CustomException;
+import m2_idl.project.model.Activity;
 import m2_idl.project.model.XUser;
 import m2_idl.project.model.XUserRole;
+import m2_idl.project.repository.ActivityRepository;
 import m2_idl.project.repository.XUserRepository;
 import m2_idl.project.security.JwtTokenProvider;
 import org.springframework.http.HttpStatus;
@@ -27,6 +29,7 @@ import java.util.List;
 public class XUserService {
 
     private final XUserRepository userRepository;
+    private final ActivityRepository activityRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
@@ -45,16 +48,18 @@ public class XUserService {
         }
     }
 
-    public String signup(XUser XUser,boolean bool) {
+    public String signup(XUser XUser) {
         if (!userRepository.existsByEmail(XUser.getEmail())) {
 
             XUser.setPassword(passwordEncoder.encode(XUser.getPassword()));
             XUser.setRoles(new ArrayList<>(List.of(XUserRole.ROLE_USER)));
             String token = jwtTokenProvider.createToken(XUser.getEmail(), XUser.getRoles());
             XUser.setToken(token);
-            if(bool){
-                userRepository.save(XUser);
+            for(Activity activity : XUser.getCv()){
+                activityRepository.save(activity);
             }
+            userRepository.save(XUser);
+
             return token;
         } else {
             throw new CustomException("UserName is already in use", HttpStatus.UNPROCESSABLE_ENTITY);

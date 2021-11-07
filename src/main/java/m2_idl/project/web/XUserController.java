@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,20 +29,18 @@ public class XUserController {
     XUserRepository repo;
 
     @Autowired
-    ActivityRepository activity;
-
-    @Autowired
     XUserService service;
 
 
     @PostConstruct
     void populate(){
-        ArrayList<XUser> users = new ArrayList<>();
         if(repo.count() == 0){
             for(int i = 0;i<10 ;i++){
                 XUser xUser = new XUser();
                 xUser.setEmail("User"+i+"@gmail.com");
                 xUser.setPassword("pass");
+                xUser.setFirstname("firstname"+i);
+                xUser.setLastname("lastname"+i);
                 xUser.setBirthday(new Date(1999,3,5));
                 xUser.setRoles(new ArrayList<>(List.of(XUserRole.ROLE_USER)));
                 xUser.setWebsite("https://hello" + i +".com");
@@ -49,13 +48,8 @@ public class XUserController {
                         Nature.PROFESSIONAL_EXPERIENCES,"desc"+i,"https://blabla"+i+".com");
                 Activity a2 = new Activity("projects"+i,2000,Nature.PROJECTS);
                 xUser.setCv(new ArrayList<>(List.of(a1,a2)));
-
-                activity.save(a1);
-                activity.save(a2);
-                users.add(xUser);
-                service.signup(xUser,false);
+                service.signup(xUser);
             }
-        repo.saveAll(users);
         }
     }
 
@@ -97,6 +91,9 @@ public class XUserController {
 
 
         user.setEmail(u.getEmail());
+        user.setPassword(u.getPassword());
+        user.setFirstname(u.getFirstname());
+        user.setLastname(u.getLastname());
         user.setWebsite(u.getWebsite());
         user.setBirthday(u.getBirthday());
         user.setCv(u.getCv());

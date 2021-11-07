@@ -26,6 +26,15 @@ public class XUser {
 	@NotNull
 	String password;
 
+	@Column(name = "firstname")
+	@NotNull
+	String firstname;
+
+	@Column(name = "lastname")
+	@NotNull
+	String lastname;
+
+
 	@Column(name = "web_site")
 	String website;
 
