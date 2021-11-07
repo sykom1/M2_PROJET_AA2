@@ -19,6 +19,8 @@ public interface XUserRepository extends JpaRepository<XUser, Long> {
      @Transactional
      void deleteByEmail(String email);
 
+
+
      @Query("SELECT u from XUser u where u.token = ?1")
      XUser findByToken(String token);
 

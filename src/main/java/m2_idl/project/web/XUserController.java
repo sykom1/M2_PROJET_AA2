@@ -11,12 +11,12 @@ import m2_idl.project.service.XUserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
-import javax.websocket.server.PathParam;
+import javax.validation.Valid;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -70,6 +70,8 @@ public class XUserController {
         return repo.findById(id).get();
     }
 
+
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void deleteUser(@PathVariable Long id) {
@@ -84,6 +86,23 @@ public class XUserController {
         repo.save(xUser);
         return xUser;
 
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<XUser> putUser(@PathVariable Long id, @Valid @RequestBody XUser u ) throws Exception {
+
+
+        XUser user = repo.findById(id)
+                .orElseThrow(() -> new Exception("User not found for this id : " + id));
+
+
+        user.setEmail(u.getEmail());
+        user.setWebsite(u.getWebsite());
+        user.setBirthday(u.getBirthday());
+        user.setCv(u.getCv());
+
+        final XUser updatedUser = repo.save(user);
+        return ResponseEntity.ok(updatedUser);
     }
 
 }

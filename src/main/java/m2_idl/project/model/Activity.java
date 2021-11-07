@@ -14,8 +14,9 @@ import javax.persistence.Id;
 @NoArgsConstructor
 public class Activity {
 
-    @Id
-    @GeneratedValue
+    @Id()
+    @GeneratedValue(generator = "activity_id")
+    @Column(name = "activity_id")
     private Long id;
 
     @Column(name = "title")

@@ -15,7 +15,8 @@ import javax.persistence.*;
 public class XUser {
 
 	@Id
-	@GeneratedValue
+	@GeneratedValue(generator = "user_id")
+	@Column(name = "user_id")
 	Long id;
 
 	@Column(name = "email")
@@ -48,5 +49,11 @@ public class XUser {
 	List<XUserRole> roles;
 
 
+	public XUser( String email, String password, String website, Date birthday) {
 
+		this.email = email;
+		this.password = password;
+		this.website = website;
+		this.birthday = birthday;
+	}
 }
