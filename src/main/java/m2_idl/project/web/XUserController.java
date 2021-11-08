@@ -74,9 +74,7 @@ public class XUserController {
 
 
     @PostMapping
-    XUser createUser(@RequestBody XUserDTO xUserDTO){
-        ModelMapper mapper  = new ModelMapper();
-        XUser xUser = mapper.map(xUserDTO,XUser.class);
+    XUser createUser(@RequestBody XUser xUser){
         repo.save(xUser);
         return xUser;
 
