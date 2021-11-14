@@ -27,11 +27,9 @@ public class XUser {
 	String password;
 
 	@Column(name = "firstname")
-	@NotNull
 	String firstname;
 
 	@Column(name = "lastname")
-	@NotNull
 	String lastname;
 
 

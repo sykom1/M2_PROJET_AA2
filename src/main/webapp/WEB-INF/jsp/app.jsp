@@ -2,11 +2,18 @@
 
 <c:url var="home" value="/home" />
 <c:url var="app" value="/app.js" />
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <div id="myApp">
 
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="${home}">Users</a>
+        <a class="navbar-brand" href="#" v-on:click="populateUsers()">Populate</a>
         <a class="navbar-brand" href="#" v-on:click="refresh()">List of users</a>
+        <sec:authorize access="!isAuthenticated()">
+            <a class="navbar-brand" href="/users/signin" >Login</a>
+        </sec:authorize>
+        <sec:authorize access="isAuthenticated()">
+            <a class="navbar-brand" href="/users/logout" >Logout</a>
+        </sec:authorize>
     </nav>
 
 
@@ -34,7 +41,11 @@
                 <td>{{user.firstname}}</td>
                 <td>{{user.lastname}}</td>
                 <td><a class="btn btn-primary btn-sm" @click="viewUser(user.id)">Montrer</a></td>
-                <td><a class="btn btn-primary btn-sm" @click="editUser(user.id)">Editer</a></td>
+                <sec:authorize access="isAuthenticated()">
+                    <td><a class="btn btn-primary btn-sm" @click="editUser(user.id)">Editer</a></td>
+                </sec:authorize>
+
+
                 <td><a class="btn btn-danger btn-sm" @click="deleteUser(user.id)">Supprimer</a></td>
             </tr>
         </table>
@@ -47,6 +58,7 @@
             <h4>{{currentUser.email}}</h4>
             <h4>{{currentUser.website}}</h4>
             <h4>{{currentUser.birthday}}</h4>
+            <h4>{{currentUser.token}}</h4>
 
         </div>
 
@@ -79,13 +91,15 @@
                 {{errors.email}}
             </div>
         </div>
-        <div class="form-group">
+
+        <div class="form-group" v-if="added != null">
             <label>Password :</label>
             <input type="password" v-model="editable.password" class="form-control"
                    v-bind:class="{'is-invalid':errors.password}"  />
             <div v-if="(errors.password)" class="alert alert-warning">
                 {{errors.password}}
             </div>
+
         </div>
         <div class="form-group">
             <label>Website :</label>

@@ -12,9 +12,12 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import java.util.ArrayList;
@@ -27,6 +30,8 @@ public class XUserController {
 
     @Autowired
     XUserRepository repo;
+
+
 
     @Autowired
     XUserService service;
@@ -74,7 +79,7 @@ public class XUserController {
 
 
     @PostMapping
-    XUser createUser(@RequestBody XUser xUser){
+    XUser postUser(@RequestBody XUser xUser){
         repo.save(xUser);
         return xUser;
 
@@ -99,5 +104,45 @@ public class XUserController {
         final XUser updatedUser = repo.save(user);
         return ResponseEntity.ok(updatedUser);
     }
+
+    @GetMapping("/signin")
+    public ModelAndView log(){
+        return new ModelAndView("login");
+    }
+
+    @PostMapping("/signin")
+    public ModelAndView login(//
+                              @RequestParam String email, //
+                              @RequestParam String password) {
+        return new ModelAndView("token","token",service.signin(email,password));
+    }
+
+    @GetMapping("/signup")
+    public ModelAndView signup(){
+        return new ModelAndView("signup");
+    }
+
+    @PostMapping("/signup")
+    public String signup(@RequestBody XUser xUser,
+                         @RequestParam String email, //
+                         @RequestParam String password) {
+
+        xUser.setEmail(email);
+        xUser.setPassword(password);
+        return service.signup(xUser);
+    }
+
+    @GetMapping("/refresh")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    public String refresh(HttpServletRequest req) {
+        return service.refresh(req.getRemoteUser());
+    }
+
+    @GetMapping("/logout")
+    public void logout(@RequestHeader(value = "Authorization") String authorize){
+        authorize = authorize.substring(7);
+        service.logout(authorize);
+    }
+
 
 }

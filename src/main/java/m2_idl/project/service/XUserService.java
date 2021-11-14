@@ -50,7 +50,6 @@ public class XUserService {
 
     public String signup(XUser XUser) {
         if (!userRepository.existsByEmail(XUser.getEmail())) {
-
             XUser.setPassword(passwordEncoder.encode(XUser.getPassword()));
             XUser.setRoles(new ArrayList<>(List.of(XUserRole.ROLE_USER)));
             String token = jwtTokenProvider.createToken(XUser.getEmail(), XUser.getRoles());
