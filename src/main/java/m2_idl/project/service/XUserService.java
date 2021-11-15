@@ -48,18 +48,14 @@ public class XUserService {
         }
     }
 
-    public String signup(XUser XUser) {
+    public void signup(XUser XUser) {
         if (!userRepository.existsByEmail(XUser.getEmail())) {
             XUser.setPassword(passwordEncoder.encode(XUser.getPassword()));
             XUser.setRoles(new ArrayList<>(List.of(XUserRole.ROLE_USER)));
-            String token = jwtTokenProvider.createToken(XUser.getEmail(), XUser.getRoles());
-            XUser.setToken(token);
             for(Activity activity : XUser.getCv()){
                 activityRepository.save(activity);
             }
             userRepository.save(XUser);
-
-            return token;
         } else {
             throw new CustomException("UserName is already in use", HttpStatus.UNPROCESSABLE_ENTITY);
         }

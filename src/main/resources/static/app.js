@@ -12,18 +12,20 @@ const myApp = {
             currentUser : null,
             editable : null,
             errors: [],
-            added :null
+            added :null,
+            token : null
         }
     },
 
     // Mise en place de l'application
     mounted() {
-
+        this.token = localStorage.getItem("token");
         console.log("Mounted ");
         this.axios = axios.create({
             baseURL: 'http://localhost:8081/',
             timeout: 1000,
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' +  this.token},
+
         });
         this.refresh();
     },
@@ -57,6 +59,7 @@ const myApp = {
         refresh: function (){
             this.axios.get("/users").then(r => {
                 this.listUsers = r.data;
+                console.log(r.data)
             });
         },
         populateUsers: function (){
@@ -72,11 +75,8 @@ const myApp = {
                 this.axios.post("/users/signup", user,{params:{
                     email: user.email, password: user.password
                     }})
-                    .then(r =>{
-                    user.token = r.data;
-                    this.refresh()
-
-                });
+                    .then(
+                    this.refresh());
 
 
             }
@@ -145,6 +145,7 @@ const myApp = {
                         this.errors.password = "";
                         this.errors.email = "";
                         this.errors.website = "";
+
                     });
                 }
             }
@@ -155,9 +156,18 @@ const myApp = {
         },
         subUser: function (name,year,desc){
 
-        }
-
+        },
+        logout: function (){
+            const config = {
+                headers: {
+                    "Content-type": "application/json",
+                    "Authorization": 'Bearer ' + this.token,
+                },
+            };
+            this.axios.get("/users/logout", null, config)
+            this.token = null;
     },
+    }
 
 
 

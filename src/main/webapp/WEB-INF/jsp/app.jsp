@@ -8,12 +8,9 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="#" v-on:click="populateUsers()">Populate</a>
         <a class="navbar-brand" href="#" v-on:click="refresh()">List of users</a>
-        <sec:authorize access="!isAuthenticated()">
-            <a class="navbar-brand" href="/users/signin" >Login</a>
-        </sec:authorize>
-        <sec:authorize access="isAuthenticated()">
-            <a class="navbar-brand" href="/users/logout" >Logout</a>
-        </sec:authorize>
+        <a class="navbar-brand" href="/users/signin" v-if="token == null" >Login</a>
+        <a class="navbar-brand" href="#" v-on:click="logout()" v-if="token != null" >Logout</a>
+
     </nav>
 
 
@@ -41,12 +38,11 @@
                 <td>{{user.firstname}}</td>
                 <td>{{user.lastname}}</td>
                 <td><a class="btn btn-primary btn-sm" @click="viewUser(user.id)">Montrer</a></td>
-                <sec:authorize access="isAuthenticated()">
-                    <td><a class="btn btn-primary btn-sm" @click="editUser(user.id)">Editer</a></td>
-                </sec:authorize>
+                <td><a class="btn btn-primary btn-sm" @click="editUser(user.id)" v-if="token != null">Editer</a></td>
 
 
-                <td><a class="btn btn-danger btn-sm" @click="deleteUser(user.id)">Supprimer</a></td>
+
+                <td><a class="btn btn-danger btn-sm" @click="deleteUser(user.id)" v-if="token != null">Supprimer</a></td>
             </tr>
         </table>
 

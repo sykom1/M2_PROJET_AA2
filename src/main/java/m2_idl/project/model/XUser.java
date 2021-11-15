@@ -39,7 +39,7 @@ public class XUser {
 	@Column(name = "birthday")
 	Date birthday;
 
-	@Column(name = "token",unique = true, nullable = false)
+	@Column(name = "token",unique = true)
 	private String token;
 
 

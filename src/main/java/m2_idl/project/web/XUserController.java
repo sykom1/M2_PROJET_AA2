@@ -49,6 +49,7 @@ public class XUserController {
                 xUser.setBirthday(new Date(1999,3,5));
                 xUser.setRoles(new ArrayList<>(List.of(XUserRole.ROLE_USER)));
                 xUser.setWebsite("https://hello" + i +".com");
+                xUser.setToken(null);
                 Activity a1 = new Activity("testxp"+i,1999,
                         Nature.PROFESSIONAL_EXPERIENCES,"desc"+i,"https://blabla"+i+".com");
                 Activity a2 = new Activity("projects"+i,2000,Nature.PROJECTS);
@@ -123,13 +124,13 @@ public class XUserController {
     }
 
     @PostMapping("/signup")
-    public String signup(@RequestBody XUser xUser,
+    public void signup(@RequestBody XUser xUser,
                          @RequestParam String email, //
                          @RequestParam String password) {
 
         xUser.setEmail(email);
         xUser.setPassword(password);
-        return service.signup(xUser);
+        service.signup(xUser);
     }
 
     @GetMapping("/refresh")
@@ -139,9 +140,11 @@ public class XUserController {
     }
 
     @GetMapping("/logout")
-    public void logout(@RequestHeader(value = "Authorization") String authorize){
-        authorize = authorize.substring(7);
-        service.logout(authorize);
+    public ModelAndView logout(@RequestHeader(value = "Authorization") String authorize){
+        String token = authorize.substring(7);
+        service.logout(token);
+
+        return new ModelAndView("app");
     }
 
 
