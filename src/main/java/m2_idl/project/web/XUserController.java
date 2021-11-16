@@ -35,6 +35,8 @@ public class XUserController {
 
     @Autowired
     XUserService service;
+    @Autowired
+    ActivityRepository activityRepository;
 
 
     @PostConstruct
@@ -50,11 +52,17 @@ public class XUserController {
                 xUser.setRoles(new ArrayList<>(List.of(XUserRole.ROLE_USER)));
                 xUser.setWebsite("https://hello" + i + ".com");
                 xUser.setToken(null);
-                Activity a1 = new Activity("testxp" + i, 1999,
-                        Nature.PROFESSIONAL_EXPERIENCES, "desc" + i, "https://blabla" + i + ".com");
-                Activity a2 = new Activity("projects" + i, 2000, Nature.PROJECTS);
-                xUser.setCv(new ArrayList<>(List.of(a1, a2)));
+
+                //xUser.setCv(new ArrayList<>(List.of(a1, a2)));
                 service.signup(xUser);
+                Activity a1 = new Activity("testxp" + i, 1999,
+                        Nature.PROFESSIONAL_EXPERIENCES, "desc" + i, "https://blabla" + i + ".com",xUser);
+                Activity a2 = new Activity("projects" + i, 2000, Nature.PROJECTS,xUser);
+
+                activityRepository.save(a1);
+                activityRepository.save(a2);
+
+
             }
         }
     }

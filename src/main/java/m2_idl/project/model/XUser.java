@@ -43,10 +43,10 @@ public class XUser {
 	private String token;
 
 
-	@CollectionTable(name="cv",//
+/*	@CollectionTable(name="cv",//
 			joinColumns = @JoinColumn(name = "email"))
-	@Column(name = "cv")
-	@OneToMany(fetch = FetchType.LAZY)
+	@Column(name = "cv")*/
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
 	List<Activity> cv = new ArrayList<>();
 
 	@ElementCollection

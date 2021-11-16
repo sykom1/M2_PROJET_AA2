@@ -24,9 +24,9 @@ public interface XUserRepository extends JpaRepository<XUser, Long> {
 
 
      @Query("SELECT distinct u " +
-             "from XUser u, Activity a " +
-             "where (SELECT a from Activity a where a.title like concat('%',:title,'%'))" +
-             " member u.cv ")
+             "from XUser u left join Activity a on u.id = a.user.id " +
+             "where a.title like concat('%',:title,'%') ")
+
      List<XUser> findListByTitle(String title);
 
 //     and a.title like concat('%',:title,'%')

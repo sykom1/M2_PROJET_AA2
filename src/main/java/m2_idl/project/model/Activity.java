@@ -1,13 +1,11 @@
 package m2_idl.project.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 @Data
@@ -33,19 +31,27 @@ public class Activity {
     @Column(name = "web_site")
     String website;
 
-    public Activity(String title,int year, Nature nature, String desc, String website) {
+    @JsonIgnore
+    @ManyToOne()
+    XUser user;
+
+    public Activity(String title,int year, Nature nature, String desc, String website,XUser xUser) {
 
         this.year = year;
         this.nature = nature;
         this.title = title;
         this.desc = desc;
         this.website = website;
+        this.user = xUser;
     }
 
-    public Activity(String title, int year, Nature nature) {
+    public Activity(String title, int year, Nature nature, XUser xUser) {
         this.title = title;
         this.year = year;
         this.nature = nature;
+        this.user = xUser;
     }
+
+
 }
 
