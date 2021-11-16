@@ -10,6 +10,7 @@ import m2_idl.project.model.XUserRole;
 import m2_idl.project.repository.ActivityRepository;
 import m2_idl.project.repository.XUserRepository;
 import m2_idl.project.service.XUserService;
+import org.hibernate.annotations.GeneratorType;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
+import javax.websocket.server.PathParam;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -33,8 +35,23 @@ public class ActivityController {
     ActivityRepository activity;
 
     @GetMapping()
-    public Iterable<Activity> getActivity() {
-        return  activity.findAll();
+    public Iterable<Activity> getActivity(@PathParam("title") String title, @PathParam("year") Integer year) {
+
+        if(title == null && year==null){
+            return  activity.findAll();
+        }else if(title != null && year == null){
+            return activity.findByTitle(title);
+
+        }else if(title == null){
+            return activity.findByYear(year);
+        }
+        else{
+            Activity a = activity.findBytitleAndYear(title,year).get(0);
+            ModelMapper modelMapper = new ModelMapper();
+            ActivityDTO  movieDTO = modelMapper.map(a, ActivityDTO.class);
+            return activity.findBytitleAndYear(title,year);
+        }
+
     }
 
     @GetMapping("/{id}")
@@ -85,5 +102,19 @@ public class ActivityController {
 
         final Activity updatedAct = activity.save(activ);
         return ResponseEntity.ok(updatedAct);
+    }
+
+
+    @GetMapping("/search")
+    public Iterable<Activity> getResearch(@PathParam("title") String title){
+
+        List<Activity> activityList = activity.findAll();
+        for(Activity activity : activityList){
+            if(activity.getTitle().contains(title)){
+                return this.activity.findListByTitle(title);
+            }
+        }
+
+        return null;
     }
 }
