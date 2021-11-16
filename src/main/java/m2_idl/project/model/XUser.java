@@ -3,6 +3,7 @@ package m2_idl.project.model;
 import com.sun.istack.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cascade;
 
 import java.util.*;
 
@@ -46,7 +47,8 @@ public class XUser {
 /*	@CollectionTable(name="cv",//
 			joinColumns = @JoinColumn(name = "email"))
 	@Column(name = "cv")*/
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
 	List<Activity> cv = new ArrayList<>();
 
 	@ElementCollection
