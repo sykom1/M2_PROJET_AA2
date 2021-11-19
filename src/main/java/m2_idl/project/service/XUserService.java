@@ -88,9 +88,11 @@ public class XUserService {
     public void logout(String token){
 
         XUser XUser = userRepository.findByToken(token);
-        jwtTokenProvider.invalidToker(XUser.getToken());
-        XUser.setToken(null);
-        userRepository.save(XUser);
+        if(XUser != null){
+            jwtTokenProvider.invalidToker(XUser.getToken());
+            XUser.setToken(null);
+            userRepository.save(XUser);
+        }
     }
 
 }

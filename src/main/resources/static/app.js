@@ -4,44 +4,47 @@ const myApp = {
     data() {
         console.log("data");
         return {
-            counter: 1,
-            message: "Hello",
-            list: [10, 20, 30],
             axios: null,
             listUsers : [],
             currentUser : null,
             editable : null,
             errors: [],
             added :null,
-            token : null
+            token : null,
+            listActivities : [],
+            listCurrentActivities : [],
+
         }
     },
 
     // Mise en place de l'application
     mounted() {
-        this.token = localStorage.getItem("token");
+        this.token = this.getCookie('access_token');
+        //this.token = localStorage.getItem("token");
         console.log("Mounted ");
-        this.axios = axios.create({
-            baseURL: 'http://localhost:8081/',
-            timeout: 1000,
-            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' +  this.token},
+        if(this.token != null && this.token !== ""){
+            this.axios = axios.create({
+                baseURL: 'http://localhost:8081/',
+                timeout: 1000,
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' +  this.token},
 
-        });
+            });
+        }else {
+            this.token = "";
+            this.axios = axios.create({
+                baseURL: 'http://localhost:8081/',
+                timeout: 1000,
+                headers: { 'Content-Type': 'application/json'}
+            });
+        }
+
+
         this.refresh();
     },
 
     methods: {
         // Place pour les futures méthodes
-        incCounter: function(step) {
 
-            console.log("incremente le compteur ");
-            this.counter+=step;
-            this.axios.get('/users/1')
-                .then(r => {
-                    console.log("read user 1 done");
-                    this.message = r.data;
-                });
-        },
         deleteUser: function (id){
             this.axios.delete('/users/' + id).then(this.refresh);
 
@@ -50,36 +53,21 @@ const myApp = {
             this.axios.get("/users/"+id).then(r => this.editable = r.data);
         },
         viewUser: function (id){
-            console.log("salut")
             this.axios.get('/users/' + id).then(r =>{
                 this.currentUser = r.data;
-
+                this.listCurrentActivities = this.currentUser.cv;
             })
         },
         refresh: function (){
             this.axios.get("/users").then(r => {
+
                 this.listUsers = r.data;
-                console.log(r.data)
             });
-        },
-        populateUsers: function (){
+            this.axios.get("/activities").then(r => {
+                this.listActivities = r.data;
+            });
+            console.log(this.token)
 
-            for(let i = this.listUsers.length; i < this.listUsers.length+3;i++) {
-                const user = {
-                    firstname: "user" + i, lastname: "lastname" + i,
-                    email: "email" + i + "@gmail.com", password:"aaa",
-                    website:"http://site" + i + ".com",birthday: new Date(2018,8,12),
-                    token: null
-                    }
-                    console.log(user);
-                this.axios.post("/users/signup", user,{params:{
-                    email: user.email, password: user.password
-                    }})
-                    .then(
-                    this.refresh());
-
-
-            }
         },
         validateEmail(email) {
             const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -123,14 +111,12 @@ const myApp = {
             }
             else {
                 if (this.added != null) {
-                    console.log(this.editable);
-                    console.log(this.added);
                     this.editable.token = "";
                     this.axios.post("/users/signup", this.editable,{params:{
                             email: this.editable.email, password: this.editable.password
                         }})
-                        .then(r =>{
-                            this.editable.token = r.data;
+                        .then(() =>{
+                            this.editable.token = "";
                             this.refresh()
                         this.editable = null;
                         this.added = null;
@@ -154,19 +140,34 @@ const myApp = {
             this.editable = {email : "",password: "",firstname: "", lastname: "", website: "",birthday: null,token: ""}
             this.added = true;
         },
-        subUser: function (name,year,desc){
-
-        },
         logout: function (){
-            const config = {
-                headers: {
-                    "Content-type": "application/json",
-                    "Authorization": 'Bearer ' + this.token,
-                },
-            };
-            this.axios.get("/users/logout", null, config)
-            this.token = null;
-    },
+
+            const AuthStr = 'Bearer '.concat(this.token);
+            axios.get("/users/logout", { headers: { Authorization: AuthStr } })
+                .then(response => {
+                    // If request is good...
+                    console.log(response.data);
+                    this.token="";
+                    document.cookie="access_token=" + "";
+                    this.refresh()
+                })
+                .catch((error) => {
+                    this.token="";
+                    document.cookie="access_token=" + "";
+                    this.refresh()
+                });
+        },
+         getCookie : function (cName){
+             const name = cName + "=";
+             const cDecoded = decodeURIComponent(document.cookie); //to be careful
+             const cArr = cDecoded.split('; ');
+
+             let res = null;
+             cArr.forEach(val => {
+                 if (val.indexOf(name) === 0) res = val.substring(name.length);
+             })
+             return res
+        }
     }
 
 

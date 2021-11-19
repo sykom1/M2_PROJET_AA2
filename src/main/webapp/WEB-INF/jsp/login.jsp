@@ -20,7 +20,7 @@
             <button type="submit" class="btn btn-primary">Enregistrer</button>
         </div>
     </form>
-    <p> Pas encore inscrit ? </p> <a class="btn btn-primary" href="/users/signup">S'inscrire</a>
+     <!--<p> Pas encore inscrit ? </p> <a class="btn btn-primary" href="/users/signup">S'inscrire</a> -->
 </div>
 
 <%@ include file="/WEB-INF/jsp/footer.jsp"%>

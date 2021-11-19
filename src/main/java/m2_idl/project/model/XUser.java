@@ -57,12 +57,4 @@ public class XUser {
 	@Column(name = "role")
 	List<XUserRole> roles;
 
-
-	public XUser( String email, String password, String website, Date birthday) {
-
-		this.email = email;
-		this.password = password;
-		this.website = website;
-		this.birthday = birthday;
-	}
 }

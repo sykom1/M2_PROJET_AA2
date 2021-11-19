@@ -34,24 +34,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     http.authorizeRequests()//
             //.antMatchers("/movies/**").permitAll()
            // .antMatchers("/api/**").permitAll()
-            .antMatchers("/app").permitAll()
-            .antMatchers("/app.js").permitAll()
-            .antMatchers("/style.css").permitAll()
-            .antMatchers("/favicon.ico").permitAll()
-            .antMatchers("/webjars/**/**").permitAll()
-            .antMatchers("/**").permitAll()
-            .antMatchers("/users/**").permitAll()//
-        .antMatchers("/users/signup").permitAll()//
-        .antMatchers("/h2-console/**/**").permitAll().
-            // -- Les autres URL nécessitent une authentification
-            anyRequest().authenticated()
-            // -- Nous autorisons un formulaire de login
-            .and().formLogin()
-            .loginPage("/users/signin")
-            .loginProcessingUrl("/login.jsp")
-            .defaultSuccessUrl("/homepage.html", true)
-            // -- Nous autorisons un formulaire de logout
-            .and().logout().permitAll()
+           .anyRequest().permitAll()
+//        .antMatchers("/h2-console/**/**").permitAll().
+//            // -- Les autres URL nécessitent une authentification
+//            anyRequest().authenticated()
+//            // -- Nous autorisons un formulaire de login
+//            .and().formLogin()
+//            .loginPage("/users/signin")
+//            .loginProcessingUrl("/login.jsp")
+//            .defaultSuccessUrl("/homepage.html", true)
+//            // -- Nous autorisons un formulaire de logout
+//            .and().logout().permitAll()
 
         // Disallow everything else..
         ;

@@ -162,8 +162,8 @@ public class XUserController {
     public ModelAndView logout(@RequestHeader(value = "Authorization") String authorize) {
         String token = authorize.substring(7);
         service.logout(token);
+        return new ModelAndView("token", "token", "");
 
-        return new ModelAndView("app");
     }
 
     @GetMapping("/search")

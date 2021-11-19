@@ -6,10 +6,10 @@
 <div id="myApp">
 
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#" v-on:click="populateUsers()">Populate</a>
-        <a class="navbar-brand" href="#" v-on:click="refresh()">List of users</a>
-        <a class="navbar-brand" href="/users/signin" v-if="token == null" >Login</a>
-        <a class="navbar-brand" href="#" v-on:click="logout()" v-if="token != null" >Logout</a>
+        <!--<a class="navbar-brand" href="#" v-on:click="refresh()">List of users</a> -->
+        <a class="navbar-brand" @click="addUser()" v-if="token != null">Ajouter une personne</a>
+        <a class="navbar-brand" href="/users/signin" v-if="token == null || token == ''" >Login</a>
+        <a class="navbar-brand" href="#" v-on:click="logout()" v-if="token != null && token !== ''" >Logout</a>
 
     </nav>
 
@@ -27,26 +27,29 @@
 
     <div class="container" v-if="editable == null">
         <h1>Liste des Users</h1>
-
         <table class="table">
             <tr>
+                {{token}}
                 <th>Nom</th>
                 <th>Prenom</th>
+
             </tr>
             <tr v-for="user in listUsers">
 
                 <td>{{user.firstname}}</td>
                 <td>{{user.lastname}}</td>
-                <td><a class="btn btn-primary btn-sm" @click="viewUser(user.id)">Montrer</a></td>
-                <td><a class="btn btn-primary btn-sm" @click="editUser(user.id)" v-if="token != null">Editer</a></td>
+
+
+                <td><a class="btn btn-primary btn-sm" @click="viewUser(user.id)" >Montrer</a></td>
+                <td><a class="btn btn-primary btn-sm" @click="editUser(user.id)" v-if="token == user.token">Editer</a></td>
 
 
 
-                <td><a class="btn btn-danger btn-sm" @click="deleteUser(user.id)" v-if="token != null">Supprimer</a></td>
+                <td><a class="btn btn-danger btn-sm" @click="deleteUser(user.id)" v-if="token == user.token">Supprimer</a></td>
             </tr>
         </table>
 
-        <a class="btn btn-primary btn-sm" @click="addUser()">Ajouter</a>
+
 
 
         <div v-if="currentUser != null">
@@ -54,7 +57,10 @@
             <h4>{{currentUser.email}}</h4>
             <h4>{{currentUser.website}}</h4>
             <h4>{{currentUser.birthday}}</h4>
-            <h4>{{currentUser.token}}</h4>
+            <h4>CV : </h4>
+            <div v-for="activity in listCurrentActivities">
+                <h3>{{activity.title}}</h3>
+            </div>
 
         </div>
 

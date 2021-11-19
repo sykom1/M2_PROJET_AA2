@@ -25,7 +25,7 @@ import java.util.Date;
 import java.util.List;
 
 @RestController
-@RequestMapping("/activity")
+@RequestMapping("/activities")
 public class ActivityController {
 
     @Autowired
@@ -62,6 +62,7 @@ public class ActivityController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void deleteActivity(@PathVariable Long id) {
+
 /*        for(int i = 0 ; i < repo.getById(id).getCv().size() ; i ++){
             System.out.println("aaa");
             if( repo.getById(id).getCv().get(i).getId().equals(id)){
@@ -72,6 +73,13 @@ public class ActivityController {
             System.out.println(repo.getById(id).getCv());
         }
         */
+
+
+        System.out.println(activity.getById(id));
+        System.out.println(activity.getById(id).getUser());
+        System.out.println(activity.getById(id).getUser().getCv());
+        activity.getById(id).getUser().getCv().remove(activity.getById(id));
+
         activity.deleteById(id);
     }
 
