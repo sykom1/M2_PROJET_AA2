@@ -1,15 +1,16 @@
 <%@ include file="/WEB-INF/jsp/header.jsp"%>
 
 <c:url var="home" value="/home" />
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <c:url var="app" value="/app.js" />
-<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <div id="myApp">
 
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <!--<a class="navbar-brand" href="#" v-on:click="refresh()">List of users</a> -->
-        <a class="navbar-brand" @click="addUser()" v-if="token != null">Ajouter une personne</a>
-        <a class="navbar-brand" href="/users/signin" v-if="token == null || token == ''" >Login</a>
-        <a class="navbar-brand" href="#" v-on:click="logout()" v-if="token != null && token !== ''" >Logout</a>
+        <a class="navbar-brand" href="#" @click="addUser()" v-if="token != null ">Ajouter une personne</a>
+        <a class="navbar-brand" href="#" @click="swapActUsers()" v-if="swap == true">Voir la liste des personnes</a>
+        <a class="navbar-brand" href="/users/signin" v-if="token == null " >Login</a>
+        <a class="navbar-brand" href="#" v-on:click="logout()" v-if="token != null " >Logout</a>
 
     </nav>
 
@@ -25,11 +26,10 @@
         <span v-on:mouseover="incCounter(1)">Il faut me survoler</span>
     </div> -->
 
-    <div class="container" v-if="editable == null">
+    <div class="container" v-if="editable == null && swap == false">
         <h1>Liste des Users</h1>
         <table class="table">
             <tr>
-                {{token}}
                 <th>Nom</th>
                 <th>Prenom</th>
 
@@ -41,30 +41,35 @@
 
 
                 <td><a class="btn btn-primary btn-sm" @click="viewUser(user.id)" >Montrer</a></td>
-                <td><a class="btn btn-primary btn-sm" @click="editUser(user.id)" v-if="token == user.token">Editer</a></td>
+                <td><a class="btn btn-primary btn-sm" @click="editUser(user.id)" v-if="token == user.token && token != null">Editer</a></td>
 
 
-
-                <td><a class="btn btn-danger btn-sm" @click="deleteUser(user.id)" v-if="token == user.token">Supprimer</a></td>
+                <td><a class="btn btn-danger btn-sm" @click="deleteUser(user.id)" v-if="token == user.token && token != null">Supprimer</a></td>
             </tr>
         </table>
 
-
-
-
-        <div v-if="currentUser != null">
-            <h3>{{currentUser.firstname}} {{currentUser.lastname}} </h3>
-            <h4>{{currentUser.email}}</h4>
-            <h4>{{currentUser.website}}</h4>
-            <h4>{{currentUser.birthday}}</h4>
-            <h4>CV : </h4>
-            <div v-for="activity in listCurrentActivities">
-                <h3>{{activity.title}}</h3>
-            </div>
-
+    </div>
+    <div v-if="currentUser != null">
+        <h3>{{currentUser.firstname}} {{currentUser.lastname}} </h3>
+        <h4>{{currentUser.email}}</h4>
+        <h4>{{currentUser.website}}</h4>
+        <h4>{{currentUser.birthday}}</h4>
+        <h4>CV : </h4>
+        <div v-for="activity in listCurrentActivities">
+            <h3><a href="#" @click="viewActivity(activity.id)">{{activity.title}}</a></h3>
         </div>
 
     </div>
+    <div v-if="currentActivity != null">
+        <h3>{{currentActivity.nature}}</h3>
+        <h2>{{currentActivity.title}}</h2>
+        <ul>
+            <li>{{currentActivity.year}}</li>
+            <li>{{currentActivity.desc}}</li>
+        </ul>
+
+    </div>
+
 
 
     <form id="app" method="post" novalidate="true" v-if="editable != null">
@@ -101,8 +106,14 @@
             <div v-if="(errors.password)" class="alert alert-warning">
                 {{errors.password}}
             </div>
+        </div>
+
+        <div class="form-group" v-if="added != null">
+            <label>CV :</label>
+            <input type="text" v-model="editable.cv" class="form-control" />
 
         </div>
+
         <div class="form-group">
             <label>Website :</label>
             <input type="url" v-model="editable.website" class="form-control"
@@ -113,7 +124,7 @@
         </div>
         <div class="form-group">
             <label>Birthday :</label>
-            <input type="date" v-model="editable.birthday" class="form-control"
+            <input type="date" placeholder="dd-mm-yyyy" v-model="editable.birthday" class="form-control"
                    v-bind:class="{'is-invalid':errors.birthday}"  />
             <div v-if="(errors.birthday)" class="alert alert-warning">
                 {{errors.birthday}}
@@ -122,11 +133,16 @@
         <div class="form-group">
             <button v-on:click.prevent="submitUser(editable.id)" class="btn btn-primary">
                 Save</button>
-            <button v-on:click="refresh()" class="btn btn-primary">
+            <button v-on:click="refresh()" class="btn btn-danger">
                 Abort</button>
         </div>
-    </form>
+        <!--<button class="btn btn-dark" > Ajouter une activité</button>
 
+        <div class="form-group">
+            <label> Titre : </label>
+            <input type="text" v-model=""/>
+        </div> -->
+    </form>
 
 </div>
 <script src="${app}"></script>

@@ -1,9 +1,11 @@
 package m2_idl.project.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sun.istack.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cascade;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.*;
 
@@ -38,7 +40,9 @@ public class XUser {
 	String website;
 
 	@Column(name = "birthday")
-	Date birthday;
+	@JsonFormat
+			(shape = JsonFormat.Shape.STRING, pattern ="dd-mm-yyyy")
+					Date birthday;
 
 	@Column(name = "token",unique = true)
 	private String token;
@@ -57,4 +61,11 @@ public class XUser {
 	@Column(name = "role")
 	List<XUserRole> roles;
 
+
+	public void setCv(List<Activity> cv) {
+		this.cv.clear();
+		if(cv != null){
+			this.cv.addAll(cv);
+		}
+	}
 }

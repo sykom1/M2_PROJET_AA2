@@ -7,12 +7,14 @@ const myApp = {
             axios: null,
             listUsers : [],
             currentUser : null,
+            currentActivity : null,
             editable : null,
             errors: [],
             added :null,
             token : null,
             listActivities : [],
             listCurrentActivities : [],
+            swap : false,
 
         }
     },
@@ -30,7 +32,7 @@ const myApp = {
 
             });
         }else {
-            this.token = "";
+            this.token = null;
             this.axios = axios.create({
                 baseURL: 'http://localhost:8081/',
                 timeout: 1000,
@@ -53,9 +55,18 @@ const myApp = {
             this.axios.get("/users/"+id).then(r => this.editable = r.data);
         },
         viewUser: function (id){
+
+            this.swap = true;
             this.axios.get('/users/' + id).then(r =>{
                 this.currentUser = r.data;
+                console.log(this.currentUser.password + " " + this.currentUser.cv)
                 this.listCurrentActivities = this.currentUser.cv;
+            })
+        },
+        viewActivity : function (id){
+            this.currentUser = null;
+            this.axios.get('/activities/' + id).then(r =>{
+                this.currentActivity = r.data;
             })
         },
         refresh: function (){
@@ -66,7 +77,6 @@ const myApp = {
             this.axios.get("/activities").then(r => {
                 this.listActivities = r.data;
             });
-            console.log(this.token)
 
         },
         validateEmail(email) {
@@ -92,6 +102,9 @@ const myApp = {
             return re.test(str);
         },
         submitUser: function (id){
+            console.log(id + " " + this.editable.password)
+
+            this.editable.cv.forEach(element => console.log(element))
             if(this.editable.firstname === ""){
                 this.errors.firstname= "écrire son prenom";
             }if(this.editable.lastname === ""){
@@ -103,12 +116,13 @@ const myApp = {
             if(this.editable.birthday === null){
                 this.errors.birthday = "remplir la date de naissance";
             }
-            if(!this.isValidHttpUrl(this.editable.website)){
-                this.errors.website = "entrer un site";
-            }
             if(!this.checkPassword(this.editable.password)){
                 this.errors.password = "Le mot de passe doit etre supérieur à 8 caracteres et doitcontenir au moins un chiffre,une majuscule, une majuscule ";
             }
+            if(!this.isValidHttpUrl(this.editable.website)){
+                this.errors.website = "entrer un site";
+            }
+
             else {
                 if (this.added != null) {
                     this.editable.token = "";
@@ -122,6 +136,7 @@ const myApp = {
                         this.added = null;
                     });
                 } else {
+                    console.log("ayayaya")
                     this.axios.put("/users/" + id, this.editable).then(() => {
                         this.refresh();
                         this.editable = null;
@@ -137,7 +152,11 @@ const myApp = {
             }
         },
         addUser : function (){
-            this.editable = {email : "",password: "",firstname: "", lastname: "", website: "",birthday: null,token: ""}
+            console.log(this.token)
+            this.resetAll()
+            this.swap = true;
+            this.currentUser = null;
+            this.editable = {email : "",password: "",firstname: "", lastname: "", website: "",birthday: null,token: "",cv:null}
             this.added = true;
         },
         logout: function (){
@@ -146,7 +165,6 @@ const myApp = {
             axios.get("/users/logout", { headers: { Authorization: AuthStr } })
                 .then(response => {
                     // If request is good...
-                    console.log(response.data);
                     this.token="";
                     document.cookie="access_token=" + "";
                     this.refresh()
@@ -167,6 +185,25 @@ const myApp = {
                  if (val.indexOf(name) === 0) res = val.substring(name.length);
              })
              return res
+        },
+        swapActUsers : function (){
+            this.swap = false;
+            this.added = null;
+            this.editable = null;
+            this.currentUser = null;
+            this.currentActivity = null;
+            this.refresh();
+
+        },
+        resetAll : function (){
+            this.swap = true;
+            this.added = null;
+            this.editable = null;
+            this.currentUser = null;
+            this.currentActivity = null;
+            this.refresh();
+
+
         }
     }
 

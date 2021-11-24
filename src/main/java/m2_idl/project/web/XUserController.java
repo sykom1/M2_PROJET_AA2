@@ -43,6 +43,7 @@ public class XUserController {
     void populate() {
         if (repo.count() == 0) {
             for (int i = 0; i < 10; i++) {
+
                 XUser xUser = new XUser();
                 xUser.setEmail("User" + i + "@gmail.com");
                 xUser.setPassword("pass");
@@ -53,15 +54,17 @@ public class XUserController {
                 xUser.setWebsite("https://hello" + i + ".com");
                 xUser.setToken(null);
 
-                //xUser.setCv(new ArrayList<>(List.of(a1, a2)));
+
+
+                System.out.println("1----------------------------------");
                 service.signup(xUser);
+                System.out.println("2----------------------------------");
                 Activity a1 = new Activity("testxp" + i, 1999,
                         Nature.PROFESSIONAL_EXPERIENCES, "desc" + i, "https://blabla" + i + ".com",xUser);
-                Activity a2 = new Activity("projects" + i, 2000, Nature.PROJECTS,xUser);
 
+                System.out.println("3----------------------------------");
                 activityRepository.save(a1);
-                activityRepository.save(a2);
-
+                System.out.println("4----------------------------------");
 
             }
         }
@@ -110,6 +113,7 @@ public class XUserController {
 
         XUser user = repo.findById(id)
                 .orElseThrow(() -> new Exception("User not found for this id : " + id));
+
 
 
         user.setEmail(u.getEmail());
