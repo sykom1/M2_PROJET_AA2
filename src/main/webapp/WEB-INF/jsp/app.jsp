@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/jsp/header.jsp"%>
 
-<c:url var="home" value="/home" />
+
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <c:url var="app" value="/app.js" />
 <div id="myApp">
@@ -15,16 +15,7 @@
     </nav>
 
 
-    <!--
-    <div class="container">
-        <h1>My application</h1>
-        <p>{{ message }}</p>
-        <p>counter = {{counter}}</p>
-        <p>list = <span v-for="element in list">{{element}} - </span></p>
-        <button v-on:click="incCounter(1)">Plus un</button>
-        <button v-on:click="incCounter(2)">Plus deux</button>
-        <span v-on:mouseover="incCounter(1)">Il faut me survoler</span>
-    </div> -->
+
 
     <div class="container" v-if="editable == null && swap == false">
         <h1>Liste des Users</h1>
@@ -42,8 +33,6 @@
 
                 <td><a class="btn btn-primary btn-sm" @click="viewUser(user.id)" >Montrer</a></td>
                 <td><a class="btn btn-primary btn-sm" @click="editUser(user.id)" v-if="token == user.token && token != null">Editer</a></td>
-
-
                 <td><a class="btn btn-danger btn-sm" @click="deleteUser(user.id)" v-if="token == user.token && token != null">Supprimer</a></td>
             </tr>
         </table>
@@ -130,11 +119,30 @@
                 {{errors.birthday}}
             </div>
         </div>
-        <div class="form-group">
+        <h2>CV</h2>
+
+        <div @if="added == null" v-for="activity in editable.cv">
+            <div class="form-group" >
+                <label>Titre :</label>
+                <input v-model="activity.title" class="form-control"/>
+            </div>
+
+            <div class="form-group">
+                <label>Annee :</label>
+                <input  type="number" v-model="activity.year" class="form-control"/>
+            </div>
+
+        </div>
+        <div>
             <button v-on:click.prevent="submitUser(editable.id)" class="btn btn-primary">
                 Save</button>
             <button v-on:click="refresh()" class="btn btn-danger">
                 Abort</button>
+        </div>
+
+
+
+
         </div>
         <!--<button class="btn btn-dark" > Ajouter une activité</button>
 
