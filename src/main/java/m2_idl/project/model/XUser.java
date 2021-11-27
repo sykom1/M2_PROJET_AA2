@@ -52,7 +52,7 @@ public class XUser {
 			joinColumns = @JoinColumn(name = "email"))
 	@Column(name = "cv")*/
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
 	List<Activity> cv = new ArrayList<>();
 
 	@ElementCollection

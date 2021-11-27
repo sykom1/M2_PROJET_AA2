@@ -9,12 +9,19 @@ const myApp = {
             currentUser : null,
             currentActivity : null,
             editable : null,
+            editableCv : null,
             errors: [],
             added :null,
             token : null,
             listActivities : [],
             listCurrentActivities : [],
             swap : false,
+            addedCv : null,
+            paginateArray : [],
+            idPage : 0,
+            nbPage : 0,
+
+
 
         }
     },
@@ -40,16 +47,22 @@ const myApp = {
             });
         }
 
-
+        this.getNbPage()
         this.refresh();
+
+
     },
 
     methods: {
         // Place pour les futures méthodes
 
-        deleteUser: function (id){
-            this.axios.delete('/users/' + id).then(this.refresh);
 
+        getNbPage(){
+          this.axios.get("/users").then(r => {
+              let onelist = r.data;
+              this.nbPage = ((onelist.length)/10) -1;
+              console.log(this.nbPage)
+          });
         },
         editUser: function (id){
             this.axios.get("/users/"+id).then(r => this.editable = r.data);
@@ -70,15 +83,15 @@ const myApp = {
             })
         },
         refresh: function (){
-            this.axios.get("/users").then(r => {
-
+            this.axios.get("/users/page/" + this.idPage).then(r => {
                 this.listUsers = r.data;
             });
             this.axios.get("/activities").then(r => {
                 this.listActivities = r.data;
             });
 
-        },
+        }
+        ,
         validateEmail(email) {
             const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
             return re.test(email);
@@ -103,8 +116,7 @@ const myApp = {
         },
         submitUser: function (id){
             console.log(id + " " + this.editable.password)
-
-            this.editable.cv.forEach(element => console.log(element))
+            const AuthStr = 'Bearer '.concat(this.token);
             if(this.editable.firstname === ""){
                 this.errors.firstname= "écrire son prenom";
             }if(this.editable.lastname === ""){
@@ -125,19 +137,25 @@ const myApp = {
 
             else {
                 if (this.added != null) {
-                    this.editable.token = "";
+                    this.editable.token = null;
                     this.axios.post("/users/signup", this.editable,{params:{
                             email: this.editable.email, password: this.editable.password
-                        }})
+                        }, headers: { Authorization: AuthStr }},)
                         .then(() =>{
-                            this.editable.token = "";
+                            this.editable.token = null;
                             this.refresh()
                         this.editable = null;
                         this.added = null;
                     });
                 } else {
-                    console.log("ayayaya")
-                    this.axios.put("/users/" + id, this.editable).then(() => {
+
+                    this.editable.cv.forEach(element => {
+                        console.log(element)
+                        this.axios.put("/activities/" + element.id, element,{headers: { Authorization: AuthStr }}).then(r  => console.log(r.data))
+                    })
+                    this.axios.put("/users/" + id, this.editable, {headers: { Authorization: AuthStr }}).then(() => {
+                        this.axios("/users/" + id).then(r=> console.log(r.data))
+                        //console.log(this.editable.cv)
                         this.refresh();
                         this.editable = null;
                         this.errors.firstname = "";
@@ -151,13 +169,48 @@ const myApp = {
                 }
             }
         },
+
         addUser : function (){
             console.log(this.token)
             this.resetAll()
             this.swap = true;
             this.currentUser = null;
-            this.editable = {email : "",password: "",firstname: "", lastname: "", website: "",birthday: null,token: "",cv:null}
+            this.editable = {email : "",password: "",firstname: "", lastname: "", website: "",birthday: null,token: null,cv:null}
             this.added = true;
+        },submitActivity : function (id){
+
+            this.currentUser.cv.push(this.editableCv);
+            this.axios.post("/activities", this.editableCv)
+                .then(() =>{
+
+
+                    this.refresh()
+                    this.editableCv = null;
+                    this.addedCv = null;
+                }).then(() => {
+
+                    this.axios.put("/users/" + this.currentUser.id,this.currentUser)
+                        .then(()=>{
+
+                            this.editableCv = null
+                        })
+
+            });
+
+
+
+        },
+        modifyIdPage : function (id){
+            this.idPage = id;
+            this.refresh();
+        }
+
+        ,
+        addActivity : function (){
+
+            this.editableCv = {title : "",year: 0,nature: null, desc: "", website: "",xUser: null}
+
+            this.addedCv = true;
         },
         logout: function (){
 
@@ -165,13 +218,19 @@ const myApp = {
             axios.get("/users/logout", { headers: { Authorization: AuthStr } })
                 .then(response => {
                     // If request is good...
-                    this.token="";
+                    this.token=null;
                     document.cookie="access_token=" + "";
+                    this.added = null;
+                    this.currentUser = null;
+                    this.editable = null;
                     this.refresh()
                 })
                 .catch((error) => {
-                    this.token="";
+                    this.token= null;
                     document.cookie="access_token=" + "";
+                    this.added = null;
+                    this.currentUser = null;
+                    this.editable = null;
                     this.refresh()
                 });
         },
@@ -212,4 +271,3 @@ const myApp = {
 }
 
 Vue.createApp(myApp).mount('#myApp');
-Vue.createApp(myApp).mount('#app');

@@ -94,7 +94,7 @@ public class ActivityController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Activity> putUser(@PathVariable Long id,@Valid @RequestBody Activity a ) throws Exception {
+    public ResponseEntity<Activity> putActivity(@PathVariable Long id,@Valid @RequestBody Activity a ) throws Exception {
         Activity activ = activity.findById(id)
                 .orElseThrow(() -> new Exception("User not found for this id : " + id));
 
@@ -103,9 +103,6 @@ public class ActivityController {
         activ.setNature(a.getNature());
         activ.setDesc(a.getDesc());
         activ.setWebsite(a.getWebsite());
-
-
-
 
 
         final Activity updatedAct = activity.save(activ);

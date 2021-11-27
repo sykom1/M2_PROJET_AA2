@@ -10,6 +10,8 @@ import m2_idl.project.repository.XUserRepository;
 import m2_idl.project.service.XUserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -42,7 +44,7 @@ public class XUserController {
     @PostConstruct
     void populate() {
         if (repo.count() == 0) {
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 100; i++) {
 
                 XUser xUser = new XUser();
                 xUser.setEmail("User" + i + "@gmail.com");
@@ -56,15 +58,13 @@ public class XUserController {
 
 
 
-                System.out.println("1----------------------------------");
+
                 service.signup(xUser);
-                System.out.println("2----------------------------------");
                 Activity a1 = new Activity("testxp" + i, 1999,
                         Nature.PROFESSIONAL_EXPERIENCES, "desc" + i, "https://blabla" + i + ".com",xUser);
 
-                System.out.println("3----------------------------------");
+
                 activityRepository.save(a1);
-                System.out.println("4----------------------------------");
 
             }
         }
@@ -83,6 +83,16 @@ public class XUserController {
             return repo.findListByEmail(email);
         }
     }
+    @RequestMapping(value = "/page/{id}", method = RequestMethod.GET)
+    Iterable<XUser> getByPage(@PathVariable int id) {
+
+        Page<XUser> pageData = repo.findAll(PageRequest.of(id, 10));
+
+        return pageData.getContent();
+
+    }
+
+
 
 
     @GetMapping("/{id}")
@@ -108,24 +118,27 @@ public class XUserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<XUser> putUser(@PathVariable Long id, @Valid @RequestBody XUser u) throws Exception {
-
+    public ResponseEntity<XUser> putUser(@PathVariable Long id, @Valid @RequestBody XUser u, @RequestHeader(value = "Authorization") String authorize) throws Exception {
+        String token = authorize.substring(7);
 
         XUser user = repo.findById(id)
                 .orElseThrow(() -> new Exception("User not found for this id : " + id));
 
 
+        if(repo.findByToken(token) != null){
+            user.setEmail(u.getEmail());
+            user.setPassword(u.getPassword());
+            user.setFirstname(u.getFirstname());
+            user.setLastname(u.getLastname());
+            user.setWebsite(u.getWebsite());
+            user.setBirthday(u.getBirthday());
+            //user.setCv(u.getCv());
 
-        user.setEmail(u.getEmail());
-        user.setPassword(u.getPassword());
-        user.setFirstname(u.getFirstname());
-        user.setLastname(u.getLastname());
-        user.setWebsite(u.getWebsite());
-        user.setBirthday(u.getBirthday());
-        user.setCv(u.getCv());
+            final XUser updatedUser = repo.save(user);
+            return ResponseEntity.ok(updatedUser);
+        }
+        return null;
 
-        final XUser updatedUser = repo.save(user);
-        return ResponseEntity.ok(updatedUser);
     }
 
     @GetMapping("/signin")
@@ -148,11 +161,14 @@ public class XUserController {
     @PostMapping("/signup")
     public void signup(@RequestBody XUser xUser,
                        @RequestParam String email, //
-                       @RequestParam String password) {
+                       @RequestParam String password,@RequestHeader(value = "Authorization") String authorize) {
+        String token = authorize.substring(7);
+        if(repo.findByToken(token) != null){
+            xUser.setEmail(email);
+            xUser.setPassword(password);
+            service.signup(xUser);
+        }
 
-        xUser.setEmail(email);
-        xUser.setPassword(password);
-        service.signup(xUser);
     }
 
 

@@ -5,13 +5,25 @@
 <c:url var="app" value="/app.js" />
 <div id="myApp">
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar navbar-dark bg-dark">
+        <a class="navbar-brand" href="#" @click="swapActUsers()" >CV-GEST</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item active">
         <!--<a class="navbar-brand" href="#" v-on:click="refresh()">List of users</a> -->
-        <a class="navbar-brand" href="#" @click="addUser()" v-if="token != null ">Ajouter une personne</a>
-        <a class="navbar-brand" href="#" @click="swapActUsers()" v-if="swap == true">Voir la liste des personnes</a>
-        <a class="navbar-brand" href="/users/signin" v-if="token == null " >Login</a>
-        <a class="navbar-brand" href="#" v-on:click="logout()" v-if="token != null " >Logout</a>
+        <a class="nav-link" href="#" @click="addUser()" v-if="token != null ">Ajouter une personne</a>
+                </li>
 
+                <li class="nav-item active">
+        <a class="nav-link" href="/users/signin" v-if="token == null " >Login</a>
+            </li>
+                <li class="nav-item active">
+        <a class="nav-link" href="#" v-on:click="logout()" v-if="token != null " >Logout</a>
+            </li>
+        </div>
     </nav>
 
 
@@ -32,11 +44,18 @@
 
 
                 <td><a class="btn btn-primary btn-sm" @click="viewUser(user.id)" >Montrer</a></td>
-                <td><a class="btn btn-primary btn-sm" @click="editUser(user.id)" v-if="token == user.token && token != null">Editer</a></td>
-                <td><a class="btn btn-danger btn-sm" @click="deleteUser(user.id)" v-if="token == user.token && token != null">Supprimer</a></td>
+                <td><a class=" btn btn-info" @click="editUser(user.id)" v-if="token == user.token && token != null">Editer</a></td>
+                <!--<td><a class="btn btn-danger btn-sm" @click="deleteUser(user.id)" v-if="token == user.token && token != null">Supprimer</a></td>
+                -->
+
             </tr>
         </table>
 
+        <nav aria-label="Page navigation example">
+            <ul class="pagination" >
+                <li class="page-item" v-for="id in nbPage"> <a class="page-link" @click="modifyIdPage(id)" href="#">{{id}}</a></li>
+            </ul>
+        </nav>
     </div>
     <div v-if="currentUser != null">
         <h3>{{currentUser.firstname}} {{currentUser.lastname}} </h3>
@@ -48,6 +67,10 @@
             <h3><a href="#" @click="viewActivity(activity.id)">{{activity.title}}</a></h3>
         </div>
 
+        <div>
+            <a  href="#" v-if="token == currentUser.token && token != null" @click="addActivity(currentUser.id)" class="btn btn-primary">Ajouter une activite</a>
+        </div>
+
     </div>
     <div v-if="currentActivity != null">
         <h3>{{currentActivity.nature}}</h3>
@@ -57,71 +80,80 @@
             <li>{{currentActivity.desc}}</li>
         </ul>
 
+
     </div>
 
 
 
-    <form id="app" method="post" novalidate="true" v-if="editable != null">
+    <form  method="post" novalidate="true" v-if="editable != null">
 
-        <div class="form-group">
+
+        <div class="form-row">
+            <div class="form-group col-md-6">
             <label>Firstname :</label>
             <input v-model="editable.firstname" class="form-control"
                    v-bind:class="{'is-invalid':errors.firstname}" />
             <div v-if="(errors.firstname)" class="alert alert-warning">
                 {{errors.firstname}}
             </div>
+            </div>
         </div>
-        <div class="form-group">
+        <div class="form-row">
+            <div class="form-group col-md-6">
             <label>Lastname :</label>
             <input  v-model="editable.lastname" class="form-control"
                    v-bind:class="{'is-invalid':errors.lastname}"  />
             <div v-if="(errors.lastname)" class="alert alert-warning">
                 {{errors.lastname}}
             </div>
-        </div>
-        <div class="form-group">
-            <label>Email :</label>
-            <input type="email" v-model="editable.email" class="form-control"
-                   v-bind:class="{'is-invalid':errors.email}"  />
-            <div v-if="(errors.email)" class="alert alert-warning">
-                {{errors.email}}
             </div>
         </div>
 
-        <div class="form-group" v-if="added != null">
-            <label>Password :</label>
-            <input type="password" v-model="editable.password" class="form-control"
-                   v-bind:class="{'is-invalid':errors.password}"  />
-            <div v-if="(errors.password)" class="alert alert-warning">
-                {{errors.password}}
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="inputEmail4">Email</label>
+                <input  placeholder="Email" id="inputEmail4" type="email" v-model="editable.email" class="form-control"
+                       v-bind:class="{'is-invalid':errors.email}" >
+                <div v-if="(errors.email)" class="alert alert-warning">
+                    {{errors.email}}
+                </div>
+            </div>
+            <div class="form-group col-md-4">
+                <label>Password :</label>
+                <input type="password" v-model="editable.password" class="form-control"
+                       v-bind:class="{'is-invalid':errors.password}"  />
+                <div v-if="(errors.password)" class="alert alert-warning">
+                    {{errors.password}}
+                </div>
             </div>
         </div>
 
-        <div class="form-group" v-if="added != null">
-            <label>CV :</label>
-            <input type="text" v-model="editable.cv" class="form-control" />
 
-        </div>
 
-        <div class="form-group">
+        <div class="form-row">
+            <div class="form-group col-md-4">
             <label>Website :</label>
             <input type="url" v-model="editable.website" class="form-control"
                    v-bind:class="{'is-invalid':errors.website}"  />
             <div v-if="(errors.website)" class="alert alert-warning">
                 {{errors.website}}
             </div>
+            </div>
         </div>
-        <div class="form-group">
+        <div class="form-row">
+            <div class="form-group">
             <label>Birthday :</label>
             <input type="date" placeholder="dd-mm-yyyy" v-model="editable.birthday" class="form-control"
                    v-bind:class="{'is-invalid':errors.birthday}"  />
             <div v-if="(errors.birthday)" class="alert alert-warning">
                 {{errors.birthday}}
             </div>
+            </div>
         </div>
-        <h2>CV</h2>
+
 
         <div @if="added == null" v-for="activity in editable.cv">
+            <h2>CV</h2>
             <div class="form-group" >
                 <label>Titre :</label>
                 <input v-model="activity.title" class="form-control"/>
@@ -131,17 +163,26 @@
                 <label>Annee :</label>
                 <input  type="number" v-model="activity.year" class="form-control"/>
             </div>
+            <div class="form-group">
+                <label>Description :</label>
+                <input  type="text" v-model="activity.desc" class="form-control"/>
+            </div>
+            <div class="form-group">
+                <label>Nature :</label>
+                <input  type="text" v-model="activity.nature" class="form-control"/>
+            </div>
+            <div class="form-group">
+                <label>Website :</label>
+                <input  type="text" v-model="activity.website" class="form-control"/>
+            </div>
+        </div >
 
-        </div>
-        <div>
-            <button v-on:click.prevent="submitUser(editable.id)" class="btn btn-primary">
-                Save</button>
-            <button v-on:click="refresh()" class="btn btn-danger">
-                Abort</button>
-        </div>
 
 
+        <div class="form-group">
+            <button v-on:click.prevent="submitUser(editable.id)" type="button" class="btn btn-success">Enregistrer</button>
 
+            <button v-on:click="refresh()" class="btn btn-danger">Annuler</button>
 
         </div>
         <!--<button class="btn btn-dark" > Ajouter une activité</button>
@@ -150,6 +191,38 @@
             <label> Titre : </label>
             <input type="text" v-model=""/>
         </div> -->
+    </form>
+
+
+    <form  method="post" novalidate="true" v-if="editableCv != null">
+        <div class="form-group" >
+            <label>Titre :</label>
+            <input v-model="editableCv.title" class="form-control"/>
+        </div>
+
+        <div class="form-group">
+            <label>Annee :</label>
+            <input  type="number" v-model="editableCv.year" class="form-control"/>
+        </div>
+        <div class="form-group">
+            <label>Description :</label>
+            <input  type="text" v-model="editableCv.desc" class="form-control"/>
+        </div>
+        <div class="form-group">
+            <label>Nature :</label>
+            <input  type="text" v-model="editableCv.nature" class="form-control"/>
+        </div>
+        <div class="form-group">
+            <label>Website :</label>
+            <input  type="text" v-model="editableCv.website" class="form-control"/>
+        </div>
+        <div>
+            <button v-on:click.prevent="submitActivity(editableCv.id)" class="btn btn-primary">
+                Enregistrer</button>
+            <button v-on:click="refresh()" class="btn btn-danger">
+                Abandonner</button>
+        </div>
+
     </form>
 
 </div>
