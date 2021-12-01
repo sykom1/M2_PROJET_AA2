@@ -23,7 +23,14 @@
                 <li class="nav-item active">
         <a class="nav-link" href="#" v-on:click="logout()" v-if="token != null " >Logout</a>
             </li>
+
+            </ul>
+
         </div>
+        <form class="form-inline my-3 my-lg-0">
+            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        </form>
     </nav>
 
 

@@ -144,6 +144,7 @@ const myApp = {
                         .then(() =>{
                             this.editable.token = null;
                             this.refresh()
+                            this.getNbPage()
                         this.editable = null;
                         this.added = null;
                     });
@@ -177,6 +178,7 @@ const myApp = {
             this.currentUser = null;
             this.editable = {email : "",password: "",firstname: "", lastname: "", website: "",birthday: null,token: null,cv:null}
             this.added = true;
+
         },submitActivity : function (id){
 
             this.currentUser.cv.push(this.editableCv);
@@ -194,7 +196,6 @@ const myApp = {
 
                             this.editableCv = null
                         })
-
             });
 
 
