@@ -179,23 +179,19 @@ const myApp = {
             this.editable = {email : "",password: "",firstname: "", lastname: "", website: "",birthday: null,token: null,cv:null}
             this.added = true;
 
-        },submitActivity : function (id){
+        },submitActivity : function (){
 
-            this.currentUser.cv.push(this.editableCv);
+            const AuthStr = 'Bearer '.concat(this.token);
+            console.log(this.editableCv)
+            this.editableCv.user = this.currentUser;
             this.axios.post("/activities", this.editableCv)
                 .then(() =>{
 
-
-                    this.refresh()
                     this.editableCv = null;
                     this.addedCv = null;
                 }).then(() => {
+                this.viewUser(this.currentUser.id)
 
-                    this.axios.put("/users/" + this.currentUser.id,this.currentUser)
-                        .then(()=>{
-
-                            this.editableCv = null
-                        })
             });
 
 
@@ -264,6 +260,10 @@ const myApp = {
             this.refresh();
 
 
+        },
+        search : function (){
+            let name = document.getElementById('search').value;
+            this.axios.get("/users/search?name=" + name).then(r=> this.listUsers = r.data);
         }
     }
 

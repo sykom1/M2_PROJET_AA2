@@ -28,8 +28,8 @@
 
         </div>
         <form class="form-inline my-3 my-lg-0">
-            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            <input class="form-control mr-sm-2" id="search" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0" @click="search()" type="submit">Search</button>
         </form>
     </nav>
 
@@ -176,7 +176,12 @@
             </div>
             <div class="form-group">
                 <label>Nature :</label>
-                <input  type="text" v-model="activity.nature" class="form-control"/>
+                <select v-model="editableCv.nature" class="form-control">
+                    <option value="">--Please choose an option--</option>
+                    <option value="PROFESSIONAL_EXPERIENCES">PROFESSIONAL_EXPERIENCES</option>
+                    <option value="PROJECTS">PROJECTS</option>
+                    <option value="FORMATIONS">FORMATIONS</option>
+                </select>
             </div>
             <div class="form-group">
                 <label>Website :</label>
@@ -217,14 +222,20 @@
         </div>
         <div class="form-group">
             <label>Nature :</label>
-            <input  type="text" v-model="editableCv.nature" class="form-control"/>
+            <select v-model="editableCv.nature" class="form-control">
+            <option value="">--Please choose an option--</option>
+            <option value="PROFESSIONAL_EXPERIENCES">PROFESSIONAL_EXPERIENCES</option>
+            <option value="PROJECTS">PROJECTS</option>
+            <option value="FORMATIONS">FORMATIONS</option>
+            </select>
+
         </div>
         <div class="form-group">
             <label>Website :</label>
             <input  type="text" v-model="editableCv.website" class="form-control"/>
         </div>
         <div>
-            <button v-on:click.prevent="submitActivity(editableCv.id)" class="btn btn-primary">
+            <button v-on:click.prevent="submitActivity()" class="btn btn-success">
                 Enregistrer</button>
             <button v-on:click="refresh()" class="btn btn-danger">
                 Abandonner</button>

@@ -44,7 +44,7 @@ public class XUserController {
     @PostConstruct
     void populate() {
         if (repo.count() == 0) {
-            for (int i = 0; i < 100; i++) {
+            for (int i = 0; i < 10; i++) {
 
                 XUser xUser = new XUser();
                 xUser.setEmail("User" + i + "@gmail.com");
@@ -64,7 +64,9 @@ public class XUserController {
                         Nature.PROFESSIONAL_EXPERIENCES, "desc" + i, "https://blabla" + i + ".com",xUser);
 
 
+
                 activityRepository.save(a1);
+
 
             }
         }
@@ -132,7 +134,7 @@ public class XUserController {
             user.setLastname(u.getLastname());
             user.setWebsite(u.getWebsite());
             user.setBirthday(u.getBirthday());
-            //user.setCv(u.getCv());
+            user.setCv(u.getCv());
 
             final XUser updatedUser = repo.save(user);
             return ResponseEntity.ok(updatedUser);
