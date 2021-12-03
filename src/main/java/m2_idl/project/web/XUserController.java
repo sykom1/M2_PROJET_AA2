@@ -57,8 +57,6 @@ public class XUserController {
                 xUser.setToken(null);
 
 
-
-
                 service.signup(xUser);
                 Activity a1 = new Activity("testxp" + i, 1999,
                         Nature.PROFESSIONAL_EXPERIENCES, "desc" + i, "https://blabla" + i + ".com",xUser);
@@ -122,7 +120,6 @@ public class XUserController {
     @PutMapping("/{id}")
     public ResponseEntity<XUser> putUser(@PathVariable Long id, @Valid @RequestBody XUser u, @RequestHeader(value = "Authorization") String authorize) throws Exception {
         String token = authorize.substring(7);
-
         XUser user = repo.findById(id)
                 .orElseThrow(() -> new Exception("User not found for this id : " + id));
 
@@ -142,6 +139,7 @@ public class XUserController {
         return null;
 
     }
+
 
     @GetMapping("/signin")
     public ModelAndView log() {
@@ -172,6 +170,7 @@ public class XUserController {
         }
 
     }
+
 
 
     @GetMapping("/refresh")

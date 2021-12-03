@@ -13,7 +13,6 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
                 <li class="nav-item active">
-        <!--<a class="navbar-brand" href="#" v-on:click="refresh()">List of users</a> -->
         <a class="nav-link" href="#" @click="addUser()" v-if="token != null ">Ajouter une personne</a>
                 </li>
 
@@ -86,7 +85,6 @@
             <li>{{currentActivity.year}}</li>
             <li>{{currentActivity.desc}}</li>
         </ul>
-
 
     </div>
 
@@ -176,8 +174,7 @@
             </div>
             <div class="form-group">
                 <label>Nature :</label>
-                <select v-model="editableCv.nature" class="form-control">
-                    <option value="">--Please choose an option--</option>
+                <select v-model="activity.nature" class="form-control">
                     <option value="PROFESSIONAL_EXPERIENCES">PROFESSIONAL_EXPERIENCES</option>
                     <option value="PROJECTS">PROJECTS</option>
                     <option value="FORMATIONS">FORMATIONS</option>
@@ -187,7 +184,7 @@
                 <label>Website :</label>
                 <input  type="text" v-model="activity.website" class="form-control"/>
             </div>
-        </div >
+        </div>
 
 
 
@@ -197,12 +194,7 @@
             <button v-on:click="refresh()" class="btn btn-danger">Annuler</button>
 
         </div>
-        <!--<button class="btn btn-dark" > Ajouter une activité</button>
 
-        <div class="form-group">
-            <label> Titre : </label>
-            <input type="text" v-model=""/>
-        </div> -->
     </form>
 
 
@@ -223,7 +215,6 @@
         <div class="form-group">
             <label>Nature :</label>
             <select v-model="editableCv.nature" class="form-control">
-            <option value="">--Please choose an option--</option>
             <option value="PROFESSIONAL_EXPERIENCES">PROFESSIONAL_EXPERIENCES</option>
             <option value="PROJECTS">PROJECTS</option>
             <option value="FORMATIONS">FORMATIONS</option>

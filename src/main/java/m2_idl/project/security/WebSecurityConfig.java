@@ -28,12 +28,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     http.csrf().disable();
 
     // No session will be created or used by spring security
-    http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+    //http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
     // Entry points
     http.authorizeRequests()//
-            //.antMatchers("/movies/**").permitAll()
-           // .antMatchers("/api/**").permitAll()
            .anyRequest().permitAll()
 //        .antMatchers("/h2-console/**/**").permitAll().
 //            // -- Les autres URL nécessitent une authentification

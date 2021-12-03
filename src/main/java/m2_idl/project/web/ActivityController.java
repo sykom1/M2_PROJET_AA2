@@ -94,15 +94,18 @@ public class ActivityController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Activity> putActivity(@PathVariable Long id,@Valid @RequestBody Activity a ) throws Exception {
+    public ResponseEntity<Activity> putActivity(@PathVariable Long id,@Valid @RequestBody ActivityDTO activityDTO ) throws Exception {
         Activity activ = activity.findById(id)
-                .orElseThrow(() -> new Exception("User not found for this id : " + id));
+                .orElseThrow(() -> new Exception("Activity not found for this id : " + id));
+        ModelMapper mapper  = new ModelMapper();
+        Activity a = mapper.map(activityDTO,Activity.class);
 
         activ.setTitle(a.getTitle());
         activ.setYear(a.getYear());
         activ.setNature(a.getNature());
         activ.setDesc(a.getDesc());
         activ.setWebsite(a.getWebsite());
+        activ.setUser(a.getUser());
 
 
         final Activity updatedAct = activity.save(activ);

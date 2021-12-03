@@ -47,7 +47,7 @@ const myApp = {
             });
         }
 
-        this.getNbPage()
+
         this.refresh();
 
 
@@ -57,22 +57,17 @@ const myApp = {
         // Place pour les futures méthodes
 
 
-        getNbPage(){
-          this.axios.get("/users").then(r => {
-              let onelist = r.data;
-              this.nbPage = ((onelist.length)/10) -1;
-              console.log(this.nbPage)
-          });
-        },
+
         editUser: function (id){
-            this.axios.get("/users/"+id).then(r => this.editable = r.data);
+            this.axios.get("/users/"+id).then(r => {
+                this.editable = r.data;
+            });
         },
         viewUser: function (id){
 
             this.swap = true;
             this.axios.get('/users/' + id).then(r =>{
                 this.currentUser = r.data;
-                console.log(this.currentUser.password + " " + this.currentUser.cv)
                 this.listCurrentActivities = this.currentUser.cv;
             })
         },
@@ -83,9 +78,15 @@ const myApp = {
             })
         },
         refresh: function (){
-            this.axios.get("/users/page/" + this.idPage).then(r => {
+
+            this.axios.get("/users").then(r => {
+                let onelist = r.data;
+                this.nbPage = Math.floor(((onelist.length)/10)) + 1;
+
+            }).then(() =>  this.axios.get("/users/page/" + this.idPage).then(r => {
                 this.listUsers = r.data;
-            });
+            }) );
+
             this.axios.get("/activities").then(r => {
                 this.listActivities = r.data;
             });
@@ -115,7 +116,7 @@ const myApp = {
             return re.test(str);
         },
         submitUser: function (id){
-            console.log(id + " " + this.editable.password)
+
             const AuthStr = 'Bearer '.concat(this.token);
             if(this.editable.firstname === ""){
                 this.errors.firstname= "écrire son prenom";
@@ -132,47 +133,51 @@ const myApp = {
                 this.errors.password = "Le mot de passe doit etre supérieur à 8 caracteres et doitcontenir au moins un chiffre,une majuscule, une majuscule ";
             }
             if(!this.isValidHttpUrl(this.editable.website)){
-                this.errors.website = "entrer un site";
+                this.errors.website = "Veuillez entrer une url valable";
             }
 
             else {
                 if (this.added != null) {
-                    this.editable.token = null;
+
                     this.axios.post("/users/signup", this.editable,{params:{
                             email: this.editable.email, password: this.editable.password
                         }, headers: { Authorization: AuthStr }},)
                         .then(() =>{
                             this.editable.token = null;
-                            this.refresh()
-                            this.getNbPage()
-                        this.editable = null;
-                        this.added = null;
+                            this.resetAll()
+                            this.swapActUsers()
                     });
+
                 } else {
 
-                    this.editable.cv.forEach(element => {
-                        console.log(element)
-                        this.axios.put("/activities/" + element.id, element,{headers: { Authorization: AuthStr }}).then(r  => console.log(r.data))
-                    })
-                    this.axios.put("/users/" + id, this.editable, {headers: { Authorization: AuthStr }}).then(() => {
-                        this.axios("/users/" + id).then(r=> console.log(r.data))
-                        //console.log(this.editable.cv)
-                        this.refresh();
-                        this.editable = null;
-                        this.errors.firstname = "";
-                        this.errors.lastname = "";
-                        this.errors.birthday = "";
-                        this.errors.password = "";
-                        this.errors.email = "";
-                        this.errors.website = "";
 
-                    });
+                        this.axios.put("/users/" + id, this.editable, {headers: { Authorization: AuthStr }}).then(() => {
+
+                        }).then( ()=>{
+                            this.axios.get("/users/" + this.editable.id).then(r => {
+                                this.editable.cv.forEach(element => {
+                                    element.user = r.data;
+                                    this.axios.put("/activities/" + element.id, element,{headers: { Authorization: AuthStr }})
+                                        .then(() =>{
+                                            this.refresh();
+                                            this.editable = null;
+                                            this.errors.firstname = "";
+                                            this.errors.lastname = "";
+                                            this.errors.birthday = "";
+                                            this.errors.password = "";
+                                            this.errors.email = "";
+                                            this.errors.website = "";
+                                        })
+
+                                })});
+                        } );
+
+
                 }
             }
         },
 
         addUser : function (){
-            console.log(this.token)
             this.resetAll()
             this.swap = true;
             this.currentUser = null;
@@ -182,7 +187,6 @@ const myApp = {
         },submitActivity : function (){
 
             const AuthStr = 'Bearer '.concat(this.token);
-            console.log(this.editableCv)
             this.editableCv.user = this.currentUser;
             this.axios.post("/activities", this.editableCv)
                 .then(() =>{
@@ -198,7 +202,7 @@ const myApp = {
 
         },
         modifyIdPage : function (id){
-            this.idPage = id;
+            this.idPage = id-1;
             this.refresh();
         }
 
@@ -258,6 +262,7 @@ const myApp = {
             this.currentUser = null;
             this.currentActivity = null;
             this.refresh();
+
 
 
         },
