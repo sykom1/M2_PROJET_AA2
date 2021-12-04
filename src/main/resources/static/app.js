@@ -21,15 +21,19 @@ const myApp = {
             nbPage : 0,
             searcher : null,
             loginPage : null,
+            mail: null,
 
         }
     },
 
     // Mise en place de l'application
     mounted() {
-        if(this.getCookie('JSESSIONID') != null){
-            this.token = this.getCookie('access_token');
-        }
+
+
+
+
+        this.token = this.getCookie('access_token');
+
 
         console.log("Mounted ");
         if (this.token != null && this.token !== "") {
@@ -63,6 +67,7 @@ const myApp = {
         editUser: function (id){
             this.axios.get("/users/"+id).then(r => {
                 this.editable = r.data;
+
             });
         },
         range : function(start, end){
@@ -87,8 +92,18 @@ const myApp = {
             this.axios.get('/users/' + id).then(r =>{
                 this.currentUser = r.data;
                 this.listCurrentActivities = this.currentUser.cv;
+
             })
         },
+        viewUserByMail : function (email){
+            this.swap = true;
+            this.axios.get('/users/mail/' + email).then(r =>{
+                this.currentUser = r.data;
+                this.listCurrentActivities = this.currentUser.cv;
+
+            })
+        }
+        ,
         getAll: function (){
             this.axios.get("/users").then(r => {
                 let onelist = r.data;
@@ -200,8 +215,6 @@ const myApp = {
 
                                 })});
                         } );
-
-
                 }
             }
         },
@@ -213,20 +226,32 @@ const myApp = {
             this.editable = {email : "",password: "",firstname: "", lastname: "", website: "",birthday: null,token: null,cv:null}
             this.added = true;
 
-        },submitActivity : function (){
+        },submitActivity : function (e){
 
             const AuthStr = 'Bearer '.concat(this.token);
             this.editableCv.user = this.currentUser;
+            if(this.editableCv.nature ==null){
+                this.errors.nature = "Veuillez entrer une nature"
+            }
+            if(this.editableCv.title == null ||this.editableCv.title === ""){
+                this.errors.title = "Veuillez ajouter un titre";
+            }
+            if(this.editableCv.year <= 1980 || this.editableCv.year > 2021){
+                this.errors.year = "Veuillez entrer une date valide";
+            }
+            else {
             this.axios.post("/activities", this.editableCv)
                 .then(() =>{
 
                     this.editableCv = null;
                     this.addedCv = null;
+                    this.errors = []
                 }).then(() => {
                 this.viewUser(this.currentUser.id)
 
             });
-
+            }
+        e.preventDefault()
 
 
         },
@@ -239,8 +264,8 @@ const myApp = {
         addActivity : function (){
 
             this.editableCv = {title : "",year: 0,nature: null, desc: "", website: "",xUser: null}
-
             this.addedCv = true;
+
         },
         goToLogin : function () {
             this.resetAll()
@@ -280,6 +305,7 @@ const myApp = {
                     }
 
                     this.loginPage = null;
+                    this.mail= email;
                     this.resetAll();
                     this.swapActUsers();
                 }).catch((e) => {
@@ -312,6 +338,19 @@ const myApp = {
                     this.refresh()
                 });
         },
+        removeActivity: function (id,idU){
+
+            let r = confirm("Voulez vous vraiment supprimer cette activité ?!");
+            if (r === true) {
+                this.axios.delete("/activities/"+id).then(() => {
+                    this.viewUser(idU)
+                });
+            } else {
+
+            }
+
+        }
+        ,
          getCookie : function (cName){
              const name = cName + "=";
              const cDecoded = decodeURIComponent(document.cookie); //to be careful
@@ -329,6 +368,8 @@ const myApp = {
             this.editable = null;
             this.currentUser = null;
             this.currentActivity = null;
+            this.loginPage = null;
+            this.editableCv = null
             this.refresh();
 
         },
@@ -343,10 +384,13 @@ const myApp = {
 
 
         },
-        search : function (){
+        search : function (e){
             let name = document.getElementById('search').value;
             this.axios.get("/users/search?name=" + name).then(r=> this.listUsers = r.data);
+
             this.searcher = true;
+            this.swapActUsers();
+            e.preventDefault()
         }
     }
 

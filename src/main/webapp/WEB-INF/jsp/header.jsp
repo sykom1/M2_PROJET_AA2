@@ -16,9 +16,25 @@
 <script src="${vue_js}"></script>
 <script src="${axios_js}"></script>
 <style type="text/css">
-	body { background: silver !important; }
-	table { background: silver !important;}
-	/* Adding !important forces the browser to overwrite the default style applied by Bootstrap */
+	body { background: #F5F5F5 !important; }
+/*
+	.gradient-custom {
+
+		background: #6a11cb;
+
+
+		background: -webkit-linear-gradient(to right, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1));
+
+
+		background: linear-gradient(to right, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1))
+	} */
+    .inf-content{
+        border:1px solid #DDDDDD;
+        -webkit-border-radius:10px;
+        -moz-border-radius:10px;
+        border-radius:10px;
+        box-shadow: 7px 7px 7px rgba(0, 0, 0, 0.3);
+    }
 </style>
 
 
@@ -28,6 +44,7 @@
 	<title>Spring boot application</title>
 	<link rel="stylesheet" href="${css}">
 	<link rel="stylesheet" href="${bootstrap_css}">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
 	<script src="${jquery_js}"></script>
 	<script src="${bootstrap_js}"></script>
 </head>

@@ -15,12 +15,15 @@
                 <li class="nav-item active">
         <a class="nav-link" href="#" @click="addUser()" v-if="token != null ">Ajouter une personne</a>
                 </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="#" @click="viewUserByMail(mail)" v-if="token != null ">Moi</a>
+                </li>
 
                 <li class="nav-item active">
-        <a class="nav-link" href="#" @click="goToLogin" v-if="token == null " >Login</a>
+        <a class="nav-link" href="#" @click="goToLogin" v-if="token == null" >Login</a>
             </li>
                 <li class="nav-item active">
-        <a class="nav-link" href="#" v-on:click="logout()" v-if="token != null " >Logout</a>
+        <a class="nav-link" href="#" v-on:click="logout()" v-if="token != null" >Logout</a>
             </li>
 
             </ul>
@@ -28,7 +31,7 @@
         </div>
         <form class="form-inline my-3 my-lg-0">
             <input class="form-control mr-sm-2" id="search" type="search" placeholder="Search" aria-label="Search">
-            <button class="btn btn-outline-success my-2 my-sm-0" @click="search()" type="submit">Search</button>
+            <button class="btn btn-outline-success my-2 my-sm-0" @click="search" type="submit">Search</button>
         </form>
     </nav>
 
@@ -36,9 +39,6 @@
 
 
     <div class="container" v-if="editable == null && swap == false">
-
-
-
         <h1 class="text-center">Liste des Users</h1>
         <table class="table table-hover ">
             <thead>
@@ -72,59 +72,297 @@
             </ul>
         </nav>
     </div>
-    <div v-if="currentUser != null">
-        <h3>{{currentUser.firstname}} {{currentUser.lastname}} </h3>
-        <h4>{{currentUser.email}}</h4>
-        <h4>{{currentUser.website}}</h4>
-        <h4>{{currentUser.birthday}}</h4>
-        <h4>CV : </h4>
-        <div v-for="activity in listCurrentActivities">
-            <h3><a href="#" @click="viewActivity(activity.id)">{{activity.title}}</a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class="panel-body inf-content" v-if="currentUser != null">
+    <div class="row">
+        <div class="col-md-4">
+            <img alt="" style="width:600px;" title="" class="img-circle img-thumbnail isTooltip" src="https://bootdey.com/img/Content/avatar/avatar7.png" data-original-title="Usuario">
         </div>
 
-        <div>
-            <a  href="#" v-if="token == currentUser.token && token != null" @click="addActivity(currentUser.id)" class="btn btn-primary">Ajouter une activite</a>
-        </div>
+    <div class="col-md-6" >
+        <strong>Informations</strong><br>
+        <div class="table-responsive">
+            <table class="table table-user-information">
+                <tbody>
+                <tr>
+                    <td>
+                        <strong>
+                            <span class="glyphicon glyphicon-asterisk text-primary"></span>
+                            Numero d'identifitacion
+                        </strong>
+                    </td>
+                    <td class="text-primary">
+                        {{currentUser.id}}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong>
+                            <span class="glyphicon glyphicon-user  text-primary"></span>
+                            Name
+                        </strong>
+                    </td>
+                    <td class="text-primary">
+                        {{currentUser.firstname}}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong>
+                            <span class="glyphicon glyphicon-cloud text-primary"></span>
+                            Lastname
+                        </strong>
+                    </td>
+                    <td class="text-primary">
+                        {{currentUser.lastname}}
+                    </td>
+                </tr>
 
+                <tr>
+                    <td>
+                        <strong>
+                            <span class="glyphicon glyphicon-bookmark text-primary"></span>
+                            Email
+                        </strong>
+                    </td>
+                    <td class="text-primary">
+                        {{currentUser.email}}
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <strong>
+                            <span class="glyphicon glyphicon-calendar text-primary"></span>
+                            Website
+                        </strong>
+                    </td>
+                    <td class="text-primary">
+                        {{currentUser.website}}
+                    </td>
+
+                </tr>
+                <tr>
+                    <td>
+                        <strong>
+                            <span class="glyphicon glyphicon-calendar text-primary"></span>
+                            Date de naissance
+                        </strong>
+                    </td>
+                    <td class="text-primary">
+                        {{currentUser.birthday}}
+                    </td>
+                </tr>
+
+                </tbody>
+
+
+            </table>
+        </div>
     </div>
+    </div>
+        <div>
+            <a  href="#" v-if="token == currentUser.token && token != null" @click="addActivity()" class="btn btn-primary">Ajouter une activite</a>
+        </div>
+    </div>
+
+
+    <div class="panel-body inf-content" v-if="currentUser != null">
+        <div class="col-md-6" >
+            <h2><strong class="font-weight-bold">Curriculum vitae</strong></h2>
+                <br>
+            <div class="table-responsive">
+                <table class="table table-user-information" v-for="activity in listCurrentActivities" >
+
+                    <tbody >
+
+
+                    <td><h4 v-if="token == currentUser.token && token != null"
+                            @click.prevent="removeActivity(activity.id,currentUser.id)">
+                        <i class="bi bi-trash hover-bg-black" ></i></h4></td>
+                    <tr>
+                        <td>
+                            <strong>
+                                <span class="glyphicon glyphicon-asterisk text-primary"></span>
+                                Nature
+                            </strong>
+                        </td>
+
+                        <td class="text-primary">
+                            {{activity.nature}}
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <strong>
+                                <span class="glyphicon glyphicon-user  text-primary"></span>
+                                Title
+                            </strong>
+                        </td>
+                        <td class="text-primary">
+                            {{activity.title}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <strong>
+                                <span class="glyphicon glyphicon-cloud text-primary"></span>
+                                Annee
+                            </strong>
+                        </td>
+                        <td class="text-primary">
+                            {{activity.year}}
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <strong>
+                                <span class="glyphicon glyphicon-bookmark text-primary"></span>
+                                Email
+                            </strong>
+                        </td>
+                        <td class="text-primary">
+                            {{currentUser.email}}
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <strong>
+                                <span class="glyphicon glyphicon-calendar text-primary"></span>
+                                Website
+                            </strong>
+                        </td>
+                        <td class="text-primary">
+                            {{activity.website}}
+                        </td>
+
+                    </tr>
+
+                    </tbody>
+
+
+                </table>
+
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     <div v-if="currentActivity != null">
-        <h3>{{currentActivity.nature}}</h3>
-        <h2>{{currentActivity.title}}</h2>
-        <ul>
-            <li>{{currentActivity.year}}</li>
-            <li>{{currentActivity.desc}}</li>
-        </ul>
+
+
 
     </div>
 
 
         <div class="container" v-if="loginPage != null">
 
-            <h2>Login</h2>
-            <form novalidate="true">
+            <form class="vh-100 gradient-custom">
+                <div class="container py-5 h-100">
+                    <div class="row d-flex justify-content-center align-items-center h-100">
+                        <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+                            <div class="card bg-dark text-white" style="border-radius: 1rem;">
+                                <div class="card-body p-5 text-center">
 
-                <div class="form-group">
-                    <label>email :</label>
-                    <input id="email" type="email"  />
-                </div>
-                <div class="form-group">
-                    <label>password :</label>
-                    <input id="password" type="password"  />
-                </div>
+                                    <div class="mb-md-5 mt-md-4 pb-5">
 
-                <div class="form-group">
-                    <button type="submit" @click="login" class="btn btn-primary">Enregistrer</button>
-                </div>
-                <div v-if="(errors.login)" class="alert alert-warning">
-                    {{errors.login}}
+                                        <h2 class="fw-bold mb-2 text-uppercase">Login</h2>
+                                        <p class="text-white-50 mb-5">Veuillez entrer vos identifiants!</p>
+
+                                        <div class="form-outline form-white mb-4">
+                                            <label class="form-label" for="typeEmailX">Email</label>
+                                            <input id="email" type="email" id="typeEmailX" class="form-control form-control-lg" />
+
+                                        </div>
+
+                                        <div class="form-outline form-white mb-4">
+                                            <label class="form-label" for="typePasswordX">Password</label>
+                                            <input id="password" type="password" id="typePasswordX" class="form-control form-control-lg" />
+
+                                        </div>
+
+                                        <button @click="login" class="btn btn-outline-light btn-lg px-5" type="submit">Sign in</button>
+                                        <div v-if="(errors.login)" class="alert alert-warning">
+                                            {{errors.login}}
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </form>
+
         </div>
 
 
 
 
-    <form  method="post" novalidate="true" v-if="editable != null">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="card">
+    <form  class="well form-horizontal" method="post" novalidate="true" v-if="editable != null">
 
 
         <div class="form-row">
@@ -207,7 +445,7 @@
             </div>
             <div class="form-group">
                 <label>Nature :</label>
-                <select v-model="activity.nature" class="form-control">
+                <select  v-model="activity.nature" class="form-control">
                     <option value="PROFESSIONAL_EXPERIENCES">PROFESSIONAL_EXPERIENCES</option>
                     <option value="PROJECTS">PROJECTS</option>
                     <option value="FORMATIONS">FORMATIONS</option>
@@ -229,17 +467,32 @@
         </div>
 
     </form>
+</div>
+
+
+
+
+
+
+
+
+
 
 
     <form  method="post" novalidate="true" v-if="editableCv != null">
         <div class="form-group" >
             <label>Titre :</label>
-            <input v-model="editableCv.title" class="form-control"/>
+            <input v-model="editableCv.title" class="form-control" required="required" />
         </div>
-
+        <div v-if="(errors.title)" class="alert alert-warning">
+            {{errors.title}}
+        </div>
         <div class="form-group">
             <label>Annee :</label>
-            <input  type="number" v-model="editableCv.year" class="form-control"/>
+            <input required="required" type="number" v-model="editableCv.year" class="form-control"/>
+        </div>
+        <div v-if="(errors.year)" class="alert alert-warning">
+            {{errors.year}}
         </div>
         <div class="form-group">
             <label>Description :</label>
@@ -247,25 +500,29 @@
         </div>
         <div class="form-group">
             <label>Nature :</label>
-            <select v-model="editableCv.nature" class="form-control">
-            <option value="PROFESSIONAL_EXPERIENCES">PROFESSIONAL_EXPERIENCES</option>
+            <select  v-model="editableCv.nature" class="form-control" required="required">
+            <option selected="selected" value="PROFESSIONAL_EXPERIENCES">PROFESSIONAL_EXPERIENCES</option>
             <option value="PROJECTS">PROJECTS</option>
             <option value="FORMATIONS">FORMATIONS</option>
             </select>
-
+        </div>
+        <div v-if="(errors.nature)" class="alert alert-warning">
+            {{errors.nature}}
         </div>
         <div class="form-group">
             <label>Website :</label>
             <input  type="text" v-model="editableCv.website" class="form-control"/>
         </div>
+
         <div>
-            <button v-on:click.prevent="submitActivity()" class="btn btn-success">
+            <button v-on:click.prevent="submitActivity" class="btn btn-success">
                 Enregistrer</button>
             <button v-on:click="refresh()" class="btn btn-danger">
                 Abandonner</button>
         </div>
 
     </form>
+
 
 </div>
 <script src="${app}"></script>

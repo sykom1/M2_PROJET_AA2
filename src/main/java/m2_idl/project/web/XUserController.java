@@ -66,6 +66,11 @@ public class XUserController {
         return repo.findById(id).get();
     }
 
+    @GetMapping("/mail/{email}")
+    public XUser getUserByEmail(@PathVariable String email) {
+        return repo.findByEmail(email);
+    }
+
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
