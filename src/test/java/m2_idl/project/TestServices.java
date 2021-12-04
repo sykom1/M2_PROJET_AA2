@@ -18,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
@@ -94,23 +95,24 @@ public class TestServices {
 
 
     @Test
+    @Transactional
     public void shouldGenerateAuthToken() throws Exception {
 
 
         XUser xUser = new XUser();
         xUser.setEmail("philipe@gmail.com");
-        xUser.setPassword("pass");
+        //xUser.setPassword("pass");
 
-       // xUser.setPassword(service.getEncodedPass("pass"));
+        xUser.setPassword(service.getEncodedPass("pass"));
 
         xUser.setFirstname("firstdname" + 99);
         xUser.setLastname("lastnadme" + 99);
         xUser.setBirthday(new Date(2000, 3, 5));
-       // xUser.setRoles(new ArrayList<>(List.of(XUserRole.ROLE_USER)));
+        xUser.setRoles(new ArrayList<>(List.of(XUserRole.ROLE_USER)));
         xUser.setWebsite("https://helldo" + 99 + ".com");
         xUser.setToken(null);
 
-        service.signup(xUser);
+        repo.save(xUser);
         // repo.save(xUser);
         //Thread.sleep(2000);
         String token = service.signin(xUser.getEmail(),"pass");
