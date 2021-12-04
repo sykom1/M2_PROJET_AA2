@@ -42,7 +42,7 @@ public class XUser {
 	@Column(name = "birthday")
 	@JsonFormat
 			(shape = JsonFormat.Shape.STRING, pattern ="dd-mm-yyyy")
-					Date birthday;
+					String birthday;
 
 	@Column(name = "token",unique = true)
 	private String token;

@@ -14,6 +14,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -42,7 +45,7 @@ public class PopulateService {
                 xUser.setPassword(password);
                 xUser.setFirstname("firstname" + i);
                 xUser.setLastname("lastname" + i);
-                xUser.setBirthday(new Date(1999, 3, 5));
+                xUser.setBirthday("2014-02-14");
                 xUser.setRoles(new ArrayList<>(List.of(XUserRole.ROLE_USER)));
                 xUser.setWebsite("https://hello" + i + ".com");
                 xUser.setToken(null);
@@ -57,6 +60,13 @@ public class PopulateService {
 
 
             }
+        }
+    }
+    public static Date parseDate(String date) {
+        try {
+            return new SimpleDateFormat("dd-MM-yyyy").parse(date);
+        } catch ( ParseException e) {
+            return null;
         }
     }
 }
