@@ -52,14 +52,17 @@ public class XUserService {
 
         if (!userRepository.existsByEmail(XUser.getEmail())) {
             XUser.setPassword(passwordEncoder.encode(XUser.getPassword()));
+
             XUser.setRoles(new ArrayList<>(List.of(XUserRole.ROLE_USER)));
-            for(Activity activity : XUser.getCv()){
-                activityRepository.save(activity);
-            }
+
             userRepository.save(XUser);
         } else {
             throw new CustomException("UserName is already in use", HttpStatus.UNPROCESSABLE_ENTITY);
         }
+    }
+
+    public  String getEncodedPass(String pass){
+        return passwordEncoder.encode(pass);
     }
 
 

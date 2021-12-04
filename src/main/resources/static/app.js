@@ -17,51 +17,69 @@ const myApp = {
             listCurrentActivities : [],
             swap : false,
             addedCv : null,
-            paginateArray : [],
             idPage : 0,
             nbPage : 0,
-
-
+            searcher : null,
+            loginPage : null,
 
         }
     },
 
     // Mise en place de l'application
     mounted() {
-        this.token = this.getCookie('access_token');
-        //this.token = localStorage.getItem("token");
+        if(this.getCookie('JSESSIONID') != null){
+            this.token = this.getCookie('access_token');
+        }
+
         console.log("Mounted ");
-        if(this.token != null && this.token !== ""){
+        if (this.token != null && this.token !== "") {
             this.axios = axios.create({
                 baseURL: 'http://localhost:8081/',
-                timeout: 1000,
-                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' +  this.token},
+
+                headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.token},
 
             });
-        }else {
+        } else {
             this.token = null;
             this.axios = axios.create({
                 baseURL: 'http://localhost:8081/',
-                timeout: 1000,
-                headers: { 'Content-Type': 'application/json'}
+                headers: {'Content-Type': 'application/json'}
             });
         }
+        const promise1 = new Promise(() => {
+            this.getAll();
+        });
 
-
+        promise1.then();
         this.refresh();
 
+    }
 
-    },
+    ,
 
     methods: {
         // Place pour les futures méthodes
-
-
 
         editUser: function (id){
             this.axios.get("/users/"+id).then(r => {
                 this.editable = r.data;
             });
+        },
+        range : function(start, end){
+            if (!end) {
+                end = start
+                start = 0
+            }
+            start -= 1
+            end -= 1
+            let arr = []
+            while (start++ !== end) {
+                if(start > 1 && start < this.nbPage ){
+                    arr.push(start)
+                }
+
+            }
+            return arr;
         },
         viewUser: function (id){
 
@@ -69,6 +87,17 @@ const myApp = {
             this.axios.get('/users/' + id).then(r =>{
                 this.currentUser = r.data;
                 this.listCurrentActivities = this.currentUser.cv;
+            })
+        },
+        getAll: function (){
+            this.axios.get("/users").then(r => {
+                let onelist = r.data;
+                let value = ((onelist.length)/20);
+                if(Number.isInteger(value)) {
+                    this.nbPage = value;
+                }else{
+                    this.nbPage = Math.floor(value) + 1;
+                }
             })
         },
         viewActivity : function (id){
@@ -79,13 +108,14 @@ const myApp = {
         },
         refresh: function (){
 
-            this.axios.get("/users").then(r => {
-                let onelist = r.data;
-                this.nbPage = Math.floor(((onelist.length)/10)) + 1;
+            this.searcher = null;
 
-            }).then(() =>  this.axios.get("/users/page/" + this.idPage).then(r => {
+            this.axios.get("/users/page/" + this.idPage).then(r => {
+
+
                 this.listUsers = r.data;
-            }) );
+
+            });
 
             this.axios.get("/activities").then(r => {
                 this.listActivities = r.data;
@@ -129,9 +159,6 @@ const myApp = {
             if(this.editable.birthday === null){
                 this.errors.birthday = "remplir la date de naissance";
             }
-            if(!this.checkPassword(this.editable.password)){
-                this.errors.password = "Le mot de passe doit etre supérieur à 8 caracteres et doitcontenir au moins un chiffre,une majuscule, une majuscule ";
-            }
             if(!this.isValidHttpUrl(this.editable.website)){
                 this.errors.website = "Veuillez entrer une url valable";
             }
@@ -141,11 +168,12 @@ const myApp = {
 
                     this.axios.post("/users/signup", this.editable,{params:{
                             email: this.editable.email, password: this.editable.password
-                        }, headers: { Authorization: AuthStr }},)
+                        }, headers: { Authorization: AuthStr }})
                         .then(() =>{
                             this.editable.token = null;
                             this.resetAll()
                             this.swapActUsers()
+                            this.getAll()
                     });
 
                 } else {
@@ -167,6 +195,7 @@ const myApp = {
                                             this.errors.password = "";
                                             this.errors.email = "";
                                             this.errors.website = "";
+
                                         })
 
                                 })});
@@ -213,11 +242,59 @@ const myApp = {
 
             this.addedCv = true;
         },
+        goToLogin : function () {
+            this.resetAll()
+            this.swap = true;
+            this.currentUser = null;
+            this.loginPage = true;
+
+        }
+        ,
+        login : function(e){
+
+            let email = document.getElementById('email').value;
+            let password = document.getElementById('password').value;
+            this.axios.post("/users/signin",null, {params: {
+                            email: email, password: password}})
+                    .then(r=>{
+                    this.errors.login = null;
+                    let tok = r.data;
+                    this.token = tok;
+                    let cookievalue,
+                        cookieexpire,
+                        cookiepath,
+                        date;
+
+                    cookievalue =tok;
+                    date = new Date();
+                    date.setTime(date.getTime() + 3600000); // will last 3600 seconds (1 hour)
+                    cookieexpire = date.toGMTString();
+
+                    cookiepath = "/"; // accessible from every web page of the domain
+
+                    if(tok != null){
+                        document.cookie="access_token=" + cookievalue + "; expires=" + cookieexpire + "; path=" + cookiepath;
+
+                    }else{
+                        document.cookie="access_token=" + ""
+                    }
+
+                    this.loginPage = null;
+                    this.resetAll();
+                    this.swapActUsers();
+                }).catch((e) => {
+                        this.errors.login = "Mot de passe ou identifiant incorrect";
+                });
+
+            e.preventDefault()
+
+
+        },
         logout: function (){
 
             const AuthStr = 'Bearer '.concat(this.token);
             axios.get("/users/logout", { headers: { Authorization: AuthStr } })
-                .then(response => {
+                .then(() => {
                     // If request is good...
                     this.token=null;
                     document.cookie="access_token=" + "";
@@ -226,7 +303,7 @@ const myApp = {
                     this.editable = null;
                     this.refresh()
                 })
-                .catch((error) => {
+                .catch(() => {
                     this.token= null;
                     document.cookie="access_token=" + "";
                     this.added = null;
@@ -269,6 +346,7 @@ const myApp = {
         search : function (){
             let name = document.getElementById('search').value;
             this.axios.get("/users/search?name=" + name).then(r=> this.listUsers = r.data);
+            this.searcher = true;
         }
     }
 

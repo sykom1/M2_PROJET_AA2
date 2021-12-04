@@ -11,9 +11,14 @@ import org.springframework.web.servlet.ModelAndView;
 public class VueAppController {
 
 
-    @RequestMapping(value = "/app")
+    @RequestMapping(value = "/")
     private ModelAndView hello() {
         return new ModelAndView("app");
+    }
+
+    @RequestMapping(value = "/app")
+    private String hi(){
+      return "redirect:/";
     }
 
 

@@ -32,20 +32,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     // Entry points
     http.authorizeRequests()//
-           .anyRequest().permitAll()
-//        .antMatchers("/h2-console/**/**").permitAll().
-//            // -- Les autres URL nécessitent une authentification
-//            anyRequest().authenticated()
-//            // -- Nous autorisons un formulaire de login
-//            .and().formLogin()
-//            .loginPage("/users/signin")
-//            .loginProcessingUrl("/login.jsp")
-//            .defaultSuccessUrl("/homepage.html", true)
-//            // -- Nous autorisons un formulaire de logout
-//            .and().logout().permitAll()
+           .anyRequest().permitAll();
 
         // Disallow everything else..
-        ;
+
 
 
 

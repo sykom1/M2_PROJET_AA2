@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -41,52 +42,17 @@ public class XUserController {
     ActivityRepository activityRepository;
 
 
-    @PostConstruct
-    void populate() {
-        if (repo.count() == 0) {
-            for (int i = 0; i < 10; i++) {
 
-                XUser xUser = new XUser();
-                xUser.setEmail("User" + i + "@gmail.com");
-                xUser.setPassword("pass");
-                xUser.setFirstname("firstname" + i);
-                xUser.setLastname("lastname" + i);
-                xUser.setBirthday(new Date(1999, 3, 5));
-                xUser.setRoles(new ArrayList<>(List.of(XUserRole.ROLE_USER)));
-                xUser.setWebsite("https://hello" + i + ".com");
-                xUser.setToken(null);
-
-
-                service.signup(xUser);
-                Activity a1 = new Activity("testxp" + i, 1999,
-                        Nature.PROFESSIONAL_EXPERIENCES, "desc" + i, "https://blabla" + i + ".com",xUser);
-
-
-
-                activityRepository.save(a1);
-
-
-            }
-        }
-    }
 
     @GetMapping()
-    public Iterable<XUser> getUser(@PathParam("email") String email) {
-
-        if (email == null) {
+    public Iterable<XUser> getUser() {
             return repo.findAll();
-        } else {
-            List<XUser> listByEmail = repo.findListByEmail(email);
-
-            ModelMapper modelMapper = new ModelMapper();
-            XUserDTO xUserDTO = modelMapper.map(listByEmail, XUserDTO.class);
-            return repo.findListByEmail(email);
-        }
     }
+
     @RequestMapping(value = "/page/{id}", method = RequestMethod.GET)
     Iterable<XUser> getByPage(@PathVariable int id) {
 
-        Page<XUser> pageData = repo.findAll(PageRequest.of(id, 10));
+        Page<XUser> pageData = repo.findAll(PageRequest.of(id, 20));
 
         return pageData.getContent();
 
@@ -126,7 +92,7 @@ public class XUserController {
 
         if(repo.findByToken(token) != null){
             user.setEmail(u.getEmail());
-            user.setPassword(u.getPassword());
+            user.setPassword(service.getEncodedPass(u.getPassword()));
             user.setFirstname(u.getFirstname());
             user.setLastname(u.getLastname());
             user.setWebsite(u.getWebsite());
@@ -141,22 +107,16 @@ public class XUserController {
     }
 
 
-    @GetMapping("/signin")
-    public ModelAndView log() {
-        return new ModelAndView("login");
-    }
+
 
     @PostMapping("/signin")
-    public ModelAndView login(//
+    public String login(//
                               @RequestParam String email, //
                               @RequestParam String password) {
-        return new ModelAndView("token", "token", service.signin(email, password));
+
+        return service.signin(email, password);
     }
 
-    @GetMapping("/signup")
-    public ModelAndView signup() {
-        return new ModelAndView("signup");
-    }
 
     @PostMapping("/signup")
     public void signup(@RequestBody XUser xUser,
@@ -204,7 +164,6 @@ public class XUserController {
                     for(Activity activity : xUser.getCv()){
 
                         if(activity.getTitle().contains(name)){
-                            System.out.println(activity.getTitle() +" "+name);
                             return repo.findListByTitle(name);
                         }
                     }
@@ -213,8 +172,6 @@ public class XUserController {
 
             }
 
-        } else {
-            return repo.findAll();
         }
         return null;
     }

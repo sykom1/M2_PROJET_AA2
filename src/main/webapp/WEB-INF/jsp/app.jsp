@@ -17,7 +17,7 @@
                 </li>
 
                 <li class="nav-item active">
-        <a class="nav-link" href="/users/signin" v-if="token == null " >Login</a>
+        <a class="nav-link" href="#" @click="goToLogin" v-if="token == null " >Login</a>
             </li>
                 <li class="nav-item active">
         <a class="nav-link" href="#" v-on:click="logout()" v-if="token != null " >Logout</a>
@@ -36,30 +36,39 @@
 
 
     <div class="container" v-if="editable == null && swap == false">
-        <h1>Liste des Users</h1>
-        <table class="table">
+
+
+
+        <h1 class="text-center">Liste des Users</h1>
+        <table class="table table-hover ">
+            <thead>
             <tr>
                 <th>Nom</th>
                 <th>Prenom</th>
 
             </tr>
+            </thead>
+            <tbody>
             <tr v-for="user in listUsers">
 
                 <td>{{user.firstname}}</td>
                 <td>{{user.lastname}}</td>
 
 
-                <td><a class="btn btn-primary btn-sm" @click="viewUser(user.id)" >Montrer</a></td>
+                <td><a class="btn btn-dark btn-sm" @click="viewUser(user.id)" >Montrer</a></td>
                 <td><a class=" btn btn-info" @click="editUser(user.id)" v-if="token == user.token && token != null">Editer</a></td>
                 <!--<td><a class="btn btn-danger btn-sm" @click="deleteUser(user.id)" v-if="token == user.token && token != null">Supprimer</a></td>
                 -->
 
             </tr>
+            </tbody>
         </table>
 
-        <nav aria-label="Page navigation example">
-            <ul class="pagination" >
-                <li class="page-item" v-for="id in nbPage"> <a class="page-link" @click="modifyIdPage(id)" href="#">{{id}}</a></li>
+        <nav v-if="searcher == null" aria-label="Page navigation example ">
+            <ul class="pagination justify-content-center" >
+                <li  class="page-item"> <a class="page-link" @click="modifyIdPage(1)" href="#">1</a></li>
+                <li  class="page-item " v-for="id in range(idPage-5,idPage+5)"> <a class="page-link" @click="modifyIdPage(id)" href="#">{{id}}</a></li>
+                <li  class="page-item"> <a class="page-link" @click="modifyIdPage(nbPage)" href="#">{{nbPage}}</a></li>
             </ul>
         </nav>
     </div>
@@ -87,6 +96,31 @@
         </ul>
 
     </div>
+
+
+        <div class="container" v-if="loginPage != null">
+
+            <h2>Login</h2>
+            <form novalidate="true">
+
+                <div class="form-group">
+                    <label>email :</label>
+                    <input id="email" type="email"  />
+                </div>
+                <div class="form-group">
+                    <label>password :</label>
+                    <input id="password" type="password"  />
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" @click="login" class="btn btn-primary">Enregistrer</button>
+                </div>
+                <div v-if="(errors.login)" class="alert alert-warning">
+                    {{errors.login}}
+                </div>
+            </form>
+        </div>
+
 
 
 
@@ -132,7 +166,6 @@
                 </div>
             </div>
         </div>
-
 
 
         <div class="form-row">

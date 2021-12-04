@@ -20,8 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 import javax.websocket.server.PathParam;
-import java.util.ArrayList;
-import java.util.Date;
+
 import java.util.List;
 
 @RestController
@@ -35,22 +34,8 @@ public class ActivityController {
     ActivityRepository activity;
 
     @GetMapping()
-    public Iterable<Activity> getActivity(@PathParam("title") String title, @PathParam("year") Integer year) {
-
-        if(title == null && year==null){
+    public Iterable<Activity> getActivity() {
             return  activity.findAll();
-        }else if(title != null && year == null){
-            return activity.findByTitle(title);
-
-        }else if(title == null){
-            return activity.findByYear(year);
-        }
-        else{
-            Activity a = activity.findBytitleAndYear(title,year).get(0);
-            ModelMapper modelMapper = new ModelMapper();
-            ActivityDTO  movieDTO = modelMapper.map(a, ActivityDTO.class);
-            return activity.findBytitleAndYear(title,year);
-        }
 
     }
 
@@ -63,21 +48,6 @@ public class ActivityController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void deleteActivity(@PathVariable Long id) {
 
-/*        for(int i = 0 ; i < repo.getById(id).getCv().size() ; i ++){
-            System.out.println("aaa");
-            if( repo.getById(id).getCv().get(i).getId().equals(id)){
-                repo.getById(id).getCv().remove(i);
-            }
-        }
-        for(int i = 0 ; i < repo.getById(id).getCv().size() ; i ++){
-            System.out.println(repo.getById(id).getCv());
-        }
-        */
-
-
-        System.out.println(activity.getById(id));
-        System.out.println(activity.getById(id).getUser());
-        System.out.println(activity.getById(id).getUser().getCv());
         activity.getById(id).getUser().getCv().remove(activity.getById(id));
 
         activity.deleteById(id);

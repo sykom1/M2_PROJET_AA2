@@ -15,6 +15,11 @@
 
 <script src="${vue_js}"></script>
 <script src="${axios_js}"></script>
+<style type="text/css">
+	body { background: silver !important; }
+	table { background: silver !important;}
+	/* Adding !important forces the browser to overwrite the default style applied by Bootstrap */
+</style>
 
 
 <html>
