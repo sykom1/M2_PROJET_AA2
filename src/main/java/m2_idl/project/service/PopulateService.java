@@ -7,8 +7,6 @@ import m2_idl.project.model.XUser;
 import m2_idl.project.model.XUserRole;
 import m2_idl.project.repository.ActivityRepository;
 import m2_idl.project.repository.XUserRepository;
-import m2_idl.project.web.ActivityController;
-import net.bytebuddy.asm.Advice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,6 +25,7 @@ public class PopulateService {
 
 
     private final PasswordEncoder passwordEncoder;
+    public static final int userNumber = 1000;
     @Autowired
     private XUserRepository repo;
     @Autowired
@@ -39,7 +38,7 @@ public class PopulateService {
     public void populate(){
         String password = passwordEncoder.encode("pass");
         if (repo.count() == 0) {
-            for (int i = 0; i < 1000; i++) {
+            for (int i = 0; i < userNumber; i++) {
                 XUser xUser = new XUser();
                 xUser.setEmail("User" + i + "@gmail.com");
                 xUser.setPassword(password);
@@ -69,4 +68,5 @@ public class PopulateService {
             return null;
         }
     }
+
 }

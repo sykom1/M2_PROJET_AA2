@@ -2,25 +2,17 @@ package m2_idl.project;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.impl.TextCodec;
-import lombok.RequiredArgsConstructor;
 import m2_idl.project.model.XUser;
 import m2_idl.project.model.XUserRole;
 import m2_idl.project.repository.XUserRepository;
 import m2_idl.project.service.XUserService;
-import m2_idl.project.web.XUserController;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.*;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -30,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+@Transactional
 @SpringBootTest
 @AutoConfigureMockMvc
 public class TestServices {
@@ -48,7 +41,7 @@ public class TestServices {
         xUser.setPassword("pass");
         xUser.setFirstname("firstname" + 99);
         xUser.setLastname("lastname" + 99);
-        xUser.setBirthday(new Date(1999, 3, 5));
+        xUser.setBirthday("2000-04-03");
         xUser.setRoles(new ArrayList<>(List.of(XUserRole.ROLE_USER)));
         xUser.setWebsite("https://hello" + 99 + ".com");
         xUser.setToken(null);
@@ -101,27 +94,54 @@ public class TestServices {
 
         XUser xUser = new XUser();
         xUser.setEmail("philipe@gmail.com");
-        //xUser.setPassword("pass");
-
         xUser.setPassword(service.getEncodedPass("pass"));
-
         xUser.setFirstname("firstdname" + 99);
         xUser.setLastname("lastnadme" + 99);
-        xUser.setBirthday(new Date(2000, 3, 5));
+        xUser.setBirthday("2000-04-03");
         xUser.setRoles(new ArrayList<>(List.of(XUserRole.ROLE_USER)));
         xUser.setWebsite("https://helldo" + 99 + ".com");
         xUser.setToken(null);
-
         repo.save(xUser);
-        // repo.save(xUser);
-        //Thread.sleep(2000);
         String token = service.signin(xUser.getEmail(),"pass");
-
-
-      //  String token = service.signin("Jean", "123");
-
         assertNotNull(token);
-        //mvc.perform(MockMvcRequestBuilders.get("/test").header("Authorization", token)).andExpect(status().isOk());
+        mvc.perform(MockMvcRequestBuilders.get("/").header("Authorization", token)).andExpect(status().isOk());
+    }
+
+    @Test
+    public void assertDelete(){
+        assertNotNull(repo.findByEmail("User1@gmail.com"));
+        service.delete("User1@gmail.com");
+        assertNull(repo.findByEmail("User1@gmail.com"));
+    }
+
+    @Test
+    @Transactional
+    public void assertSetToken(){
+        XUser test = repo.findByEmail("User1@gmail.com");
+        assertNull(test.getToken());
+        service.saveToken(test.getEmail(),"pass");
+        assertNotNull(test.getToken());
+    }
+
+
+    @Test
+    public void assertSearch(){
+
+        XUser test = service.search("User1@gmail.com");
+        assertEquals("firstname1",test.getFirstname());
+    }
+
+
+    @Test
+    @Transactional
+    public void asserLogout(){
+        service.signin("User1@gmail.com","pass");
+        assertNotNull(repo.findByEmail("User1@gmail.com").getToken());
+        service.logout(repo.findByEmail("User1@gmail.com").getToken());
+        assertNull(repo.findByEmail("User1@gmail.com").getToken());
+
+
+
     }
 
 }
