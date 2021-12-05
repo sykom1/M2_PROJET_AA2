@@ -57,17 +57,15 @@ const myApp = {
         promise1.then();
         this.refresh();
 
-    }
-
-    ,
+    },
 
     methods: {
         // Place pour les futures méthodes
 
         editUser: function (id){
+            this.currentUser = null;
             this.axios.get("/users/"+id).then(r => {
                 this.editable = r.data;
-
             });
         },
         range : function(start, end){
@@ -97,13 +95,13 @@ const myApp = {
         },
         viewUserByMail : function (email){
             this.swap = true;
+            console.log(email)
             this.axios.get('/users/mail/' + email).then(r =>{
                 this.currentUser = r.data;
                 this.listCurrentActivities = this.currentUser.cv;
 
             })
-        }
-        ,
+        },
         getAll: function (){
             this.axios.get("/users").then(r => {
                 let onelist = r.data;
@@ -163,6 +161,10 @@ const myApp = {
         submitUser: function (id){
 
             const AuthStr = 'Bearer '.concat(this.token);
+
+            this.editable.password = this.editable.pass;
+            console.log(this.editable.pass)
+            this.editable.pass = null;
             if(this.editable.firstname === ""){
                 this.errors.firstname= "écrire son prenom";
             }if(this.editable.lastname === ""){
@@ -189,7 +191,8 @@ const myApp = {
                             this.resetAll()
                             this.swapActUsers()
                             this.getAll()
-                    });
+                            this.refresh()
+                    })
 
                 } else {
 
@@ -202,7 +205,7 @@ const myApp = {
                                     element.user = r.data;
                                     this.axios.put("/activities/" + element.id, element,{headers: { Authorization: AuthStr }})
                                         .then(() =>{
-                                            this.refresh();
+                                            this.viewUser(this.editable.id)
                                             this.editable = null;
                                             this.errors.firstname = "";
                                             this.errors.lastname = "";

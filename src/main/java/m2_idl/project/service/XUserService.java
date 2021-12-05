@@ -35,12 +35,14 @@ public class XUserService {
     private final AuthenticationManager authenticationManager;
 
 
-    public String signin(String UserName, String password) {
+    public String signin(String email, String password) {
         try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(UserName, password));
-            String token = jwtTokenProvider.createToken(UserName, userRepository.findByEmail(UserName).getRoles());
-            userRepository.findByEmail(UserName).setToken(token);
-            userRepository.save(userRepository.findByEmail(UserName));
+            email = email.toLowerCase();
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
+
+            String token = jwtTokenProvider.createToken(email.toLowerCase(), userRepository.findByEmail(email).getRoles());
+            userRepository.findByEmail(email).setToken(token);
+            userRepository.save(userRepository.findByEmail(email));
 
             return token;
         } catch (AuthenticationException e) {

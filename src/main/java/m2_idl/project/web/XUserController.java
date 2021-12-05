@@ -72,6 +72,7 @@ public class XUserController {
     }
 
 
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void deleteUser(@PathVariable Long id) {
@@ -94,10 +95,15 @@ public class XUserController {
         XUser user = repo.findById(id)
                 .orElseThrow(() -> new Exception("User not found for this id : " + id));
 
+        String password = u.getPassword();
 
         if(repo.findByToken(token) != null){
-            user.setEmail(u.getEmail());
-            user.setPassword(service.getEncodedPass(u.getPassword()));
+            user.setEmail(u.getEmail().toLowerCase());
+
+            if(password != null && !password.equals("")){
+                user.setPassword(service.getEncodedPass(u.getPassword()));
+            }
+
             user.setFirstname(u.getFirstname());
             user.setLastname(u.getLastname());
             user.setWebsite(u.getWebsite());
@@ -119,6 +125,7 @@ public class XUserController {
                               @RequestParam String email, //
                               @RequestParam String password) {
 
+
         return service.signin(email, password);
     }
 
@@ -129,7 +136,7 @@ public class XUserController {
                        @RequestParam String password,@RequestHeader(value = "Authorization") String authorize) {
         String token = authorize.substring(7);
         if(repo.findByToken(token) != null){
-            xUser.setEmail(email);
+            xUser.setEmail(email.toLowerCase());
             xUser.setPassword(password);
             service.signup(xUser);
         }
@@ -145,30 +152,28 @@ public class XUserController {
     }
 
     @GetMapping("/logout")
-    public ModelAndView logout(@RequestHeader(value = "Authorization") String authorize) {
+    public void logout(@RequestHeader(value = "Authorization") String authorize) {
         String token = authorize.substring(7);
         service.logout(token);
-        return new ModelAndView("token", "token", "");
 
     }
 
     @GetMapping("/search")
     public Iterable<XUser> getResearch(@PathParam("name") String name) {
+
         if (name != null) {
-
-
             List<XUser> xUserList = repo.findAll();
             for (XUser xUser : xUserList) {
 
-                if (xUser.getFirstname().contains(name)) {
+                if (xUser.getFirstname().toLowerCase().contains(name.toLowerCase())) {
                     return repo.findListByFirstname(name);
-                } else if (xUser.getLastname().contains(name)) {
+                } else if (xUser.getLastname().toLowerCase().contains(name.toLowerCase())) {
                     return repo.findListByLastname(name);
                 }
                 else {
                     for(Activity activity : xUser.getCv()){
 
-                        if(activity.getTitle().contains(name)){
+                        if(activity.getTitle().toLowerCase().contains(name.toLowerCase())){
                             return repo.findListByTitle(name);
                         }
                     }

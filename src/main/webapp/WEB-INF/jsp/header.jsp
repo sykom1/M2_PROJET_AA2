@@ -17,17 +17,31 @@
 <script src="${axios_js}"></script>
 <style type="text/css">
 	body { background: #F5F5F5 !important; }
-/*
-	.gradient-custom {
-
-		background: #6a11cb;
 
 
-		background: -webkit-linear-gradient(to right, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1));
+	.bi-trash:hover
+	{
+		color: red;
+	}
+	.bi-trash
+	{
+		color: gray;
+	}
 
+	.bi-journal-plus:hover{
+		color: black;
+	}
+	.bi-journal-plus{
+		color: gray;
+	}
 
-		background: linear-gradient(to right, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1))
-	} */
+	.bi-pencil-square{
+		color: gray;
+	}
+	.bi-pencil-square:hover{
+		color: black;
+	}
+
     .inf-content{
         border:1px solid #DDDDDD;
         -webkit-border-radius:10px;

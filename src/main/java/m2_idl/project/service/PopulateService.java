@@ -39,34 +39,44 @@ public class PopulateService {
         String password = passwordEncoder.encode("pass");
         if (repo.count() == 0) {
             for (int i = 0; i < userNumber; i++) {
+
                 XUser xUser = new XUser();
-                xUser.setEmail("User" + i + "@gmail.com");
-                xUser.setPassword(password);
-                xUser.setFirstname("firstname" + i);
-                xUser.setLastname("lastname" + i);
-                xUser.setBirthday("2014-02-14");
-                xUser.setRoles(new ArrayList<>(List.of(XUserRole.ROLE_USER)));
-                xUser.setWebsite("https://hello" + i + ".com");
-                xUser.setToken(null);
+                if(i == 0 ){
+                    xUser.setEmail("test@test.com");
+                    xUser.setPassword(passwordEncoder.encode("test"));
+                    xUser.setFirstname("testFN");
+                    xUser.setLastname("testLN");
+                    xUser.setBirthday("2014-02-14");
+                    xUser.setRoles(new ArrayList<>(List.of(XUserRole.ROLE_USER)));
+                    xUser.setWebsite("https://test.com");
+                    xUser.setToken(null);
 
-                repo.save(xUser);
+                    repo.save(xUser);
 
-                Activity a1 = new Activity("testxp" + i, 1999,
-                        Nature.PROFESSIONAL_EXPERIENCES, "desc" + i, "https://blabla" + i + ".com",xUser);
+                    Activity a1 = new Activity("titretest" + i, 1999,
+                            Nature.PROFESSIONAL_EXPERIENCES, "desc" + i, "https://blabla" + i + ".com",xUser);
 
+                    activityRepository.save(a1);
+                }else {
+                    xUser.setEmail("user" + i + "@gmail.com");
+                    xUser.setPassword(password);
+                    xUser.setFirstname("firstname" + i);
+                    xUser.setLastname("lastname" + i);
+                    xUser.setBirthday("2014-02-14");
+                    xUser.setRoles(new ArrayList<>(List.of(XUserRole.ROLE_USER)));
+                    xUser.setWebsite("https://hello" + i + ".com");
+                    xUser.setToken(null);
 
-                activityRepository.save(a1);
+                    repo.save(xUser);
 
+                    Activity a1 = new Activity("titre" + i, 1999,
+                            Nature.PROFESSIONAL_EXPERIENCES, "desc" + i, "https://blabla" + i + ".com", xUser);
 
+                    activityRepository.save(a1);
+                }
             }
         }
     }
-    public static Date parseDate(String date) {
-        try {
-            return new SimpleDateFormat("dd-MM-yyyy").parse(date);
-        } catch ( ParseException e) {
-            return null;
-        }
-    }
+
 
 }

@@ -103,6 +103,10 @@
             <table class="table table-user-information">
                 <tbody>
                 <tr>
+                    <i class="bi bi-pencil-square"
+                       v-if="token == currentUser.token && token != null"
+                       @click.prevent="editUser(currentUser.id)"
+                    >Editer</i>
                     <td>
                         <strong>
                             <span class="glyphicon glyphicon-asterisk text-primary"></span>
@@ -179,9 +183,7 @@
         </div>
     </div>
     </div>
-        <div>
-            <a  href="#" v-if="token == currentUser.token && token != null" @click="addActivity()" class="btn btn-primary">Ajouter une activite</a>
-        </div>
+
     </div>
 
 
@@ -195,9 +197,14 @@
                     <tbody >
 
 
-                    <td><h4 v-if="token == currentUser.token && token != null"
-                            @click.prevent="removeActivity(activity.id,currentUser.id)">
-                        <i class="bi bi-trash hover-bg-black" ></i></h4></td>
+                    <tr>
+                        <td>  <h4>
+                            <i class="bi bi-trash" v-if="token == currentUser.token && token != null"
+                               @click.prevent="removeActivity(activity.id,currentUser.id)" >Supprimer</i>
+                        </h4></td>
+                    </tr>
+
+
                     <tr>
                         <td>
                             <strong>
@@ -238,11 +245,11 @@
                         <td>
                             <strong>
                                 <span class="glyphicon glyphicon-bookmark text-primary"></span>
-                                Email
+                                Description
                             </strong>
                         </td>
                         <td class="text-primary">
-                            {{currentUser.email}}
+                            {{activity.desc}}
                         </td>
                     </tr>
 
@@ -263,43 +270,14 @@
 
 
                 </table>
-
+                <div>
+                   <h3> <i href="#" v-if="token == currentUser.token && token != null" @click="addActivity()" class="bi bi-journal-plus"> Ajouter une activite</i>
+                       </h3>
+                </div>
             </div>
         </div>
     </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <div v-if="currentActivity != null">
-
-
-
-    </div>
 
 
         <div class="container" v-if="loginPage != null">
@@ -322,7 +300,7 @@
 
                                         </div>
 
-                                        <div class="form-outline form-white mb-4">
+                                        <div class="form-outline form-white mb-4 ">
                                             <label class="form-label" for="typePasswordX">Password</label>
                                             <input id="password" type="password" id="typePasswordX" class="form-control form-control-lg" />
 
@@ -341,28 +319,12 @@
                     </div>
                 </div>
             </form>
-
         </div>
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="card">
-    <form  class="well form-horizontal" method="post" novalidate="true" v-if="editable != null">
+<div class="col-md-4 col-md-offset-4  center">
+    <form  class="well form-horizontal center" method="post" novalidate="true" v-if="editable != null">
 
 
         <div class="form-row">
@@ -376,7 +338,7 @@
             </div>
         </div>
         <div class="form-row">
-            <div class="form-group col-md-6">
+            <div class="form-group col-md-4">
             <label>Lastname :</label>
             <input  v-model="editable.lastname" class="form-control"
                    v-bind:class="{'is-invalid':errors.lastname}"  />
@@ -387,7 +349,7 @@
         </div>
 
         <div class="form-row">
-            <div class="form-group col-md-4">
+            <div class="form-group ">
                 <label for="inputEmail4">Email</label>
                 <input  placeholder="Email" id="inputEmail4" type="email" v-model="editable.email" class="form-control"
                        v-bind:class="{'is-invalid':errors.email}" >
@@ -395,15 +357,17 @@
                     {{errors.email}}
                 </div>
             </div>
-            <div class="form-group col-md-4">
-                <label>Password :</label>
-                <input type="password" v-model="editable.password" class="form-control"
-                       v-bind:class="{'is-invalid':errors.password}"  />
-                <div v-if="(errors.password)" class="alert alert-warning">
-                    {{errors.password}}
-                </div>
+
+        </div>
+        <div class="form-row">
+            <label>Password :</label>
+            <input type="password" v-model="editable.pass" class="form-control"
+                   v-bind:class="{'is-invalid':errors.password}"  />
+            <div v-if="(errors.password)" class="alert alert-warning">
+                {{errors.password}}
             </div>
         </div>
+
 
 
         <div class="form-row">

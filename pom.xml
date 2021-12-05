@@ -12,8 +12,10 @@
     <artifactId>project</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>project</name>
+    <packaging>war</packaging>
     <description>project</description>
     <properties>
+        <start-class>m2_idl.project.ProjectApplication</start-class>
         <java.version>11</java.version>
     </properties>
     <dependencies>
@@ -182,6 +184,7 @@
                     </excludes>
                 </configuration>
             </plugin>
+
         </plugins>
     </build>
 
