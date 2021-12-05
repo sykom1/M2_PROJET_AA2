@@ -2,7 +2,6 @@ const myApp = {
 
     // Préparation des données
     data() {
-        console.log("data");
         return {
             axios: null,
             listUsers : [],
@@ -35,7 +34,7 @@ const myApp = {
         this.token = this.getCookie('access_token');
 
 
-        console.log("Mounted ");
+
         if (this.token != null && this.token !== "") {
             this.axios = axios.create({
                 baseURL: 'http://localhost:8081/',
@@ -95,8 +94,7 @@ const myApp = {
         },
         viewUserByMail : function (email){
             this.swap = true;
-            console.log(email)
-            this.axios.get('/users/mail/' + email).then(r =>{
+            this.axios.get('/users/mail/' + email.toLowerCase()).then(r =>{
                 this.currentUser = r.data;
                 this.listCurrentActivities = this.currentUser.cv;
 
@@ -163,7 +161,6 @@ const myApp = {
             const AuthStr = 'Bearer '.concat(this.token);
 
             this.editable.password = this.editable.pass;
-            console.log(this.editable.pass)
             this.editable.pass = null;
             if(this.editable.firstname === ""){
                 this.errors.firstname= "écrire son prenom";
@@ -330,6 +327,8 @@ const myApp = {
                     this.added = null;
                     this.currentUser = null;
                     this.editable = null;
+                    this.swapActUsers();
+                    this.resetAll()
                     this.refresh()
                 })
                 .catch(() => {
@@ -338,6 +337,8 @@ const myApp = {
                     this.added = null;
                     this.currentUser = null;
                     this.editable = null;
+                    this.swapActUsers();
+                    this.resetAll()
                     this.refresh()
                 });
         },
