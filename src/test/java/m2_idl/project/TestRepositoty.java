@@ -28,7 +28,7 @@ public class TestRepositoty {
 
     @Test
     public void assertFindByMail(){
-        XUser xUser = repo.findByEmail("User1@gmail.com");
+        XUser xUser = repo.findByEmail("user1@gmail.com");
         assertEquals("firstname1",xUser.getFirstname());
     }
 
@@ -52,11 +52,11 @@ public class TestRepositoty {
 
     @Test
     public void assertFindListByTitle(){
-        List<XUser> xUsers = repo.findListByTitle("testxp1");
+        List<XUser> xUsers = repo.findListByTitle("titre1");
         boolean isInTitle = false;
         for (XUser xUser : xUsers){
             for (Activity activity : xUser.getCv()){
-                if (activity.getTitle().contains("testxp10")) {
+                if (activity.getTitle().equals("titre10")) {
                     isInTitle = true;
                     break;
                 }
@@ -66,11 +66,11 @@ public class TestRepositoty {
         assertTrue(isInTitle);
 
 
-        List<XUser> xUsers2 = repo.findListByTitle("xp1");
+        List<XUser> xUsers2 = repo.findListByTitle("itre1");
         boolean isInTitleENd = false;
         for (XUser xUser : xUsers2){
             for (Activity activity : xUser.getCv()){
-                if (activity.getTitle().contains("testxp10")) {
+                if (activity.getTitle().contains("titre10")) {
                     isInTitleENd = true;
                     break;
                 }
@@ -83,21 +83,21 @@ public class TestRepositoty {
 
     @Test
     public void assertExistsByEmail(){
-        assertTrue(repo.existsByEmail("User100@gmail.com"));
+        assertTrue(repo.existsByEmail("user100@gmail.com"));
     }
 
     @Test
     public void assertDeleteByEmail(){
-        assertTrue(repo.existsByEmail("User100@gmail.com"));
-        repo.deleteByEmail("User100@gmail.com");
-        assertFalse(repo.existsByEmail("User100@gmail.com"));
+        assertTrue(repo.existsByEmail("user100@gmail.com"));
+        repo.deleteByEmail("user100@gmail.com");
+        assertFalse(repo.existsByEmail("user100@gmail.com"));
     }
 
 
     @Test
     public void assertFindByToken(){
-        service.signin("User1@gmail.com","pass");
-        XUser xUser1 = repo.findByEmail("User1@gmail.com");
+        service.signin("user1@gmail.com","pass");
+        XUser xUser1 = repo.findByEmail("user1@gmail.com");
         String token = xUser1.getToken();
         XUser xUser2 = repo.findByToken(token);
 

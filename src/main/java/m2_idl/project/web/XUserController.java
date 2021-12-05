@@ -68,6 +68,7 @@ public class XUserController {
 
     @GetMapping("/mail/{email}")
     public XUser getUserByEmail(@PathVariable String email) {
+        email = email.toLowerCase();
         return repo.findByEmail(email);
     }
 

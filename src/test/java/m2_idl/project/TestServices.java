@@ -109,15 +109,15 @@ public class TestServices {
 
     @Test
     public void assertDelete(){
-        assertNotNull(repo.findByEmail("User1@gmail.com"));
-        service.delete("User1@gmail.com");
-        assertNull(repo.findByEmail("User1@gmail.com"));
+        assertNotNull(repo.findByEmail("user1@gmail.com"));
+        service.delete("user1@gmail.com");
+        assertNull(repo.findByEmail("user1@gmail.com"));
     }
 
     @Test
     @Transactional
     public void assertSetToken(){
-        XUser test = repo.findByEmail("User1@gmail.com");
+        XUser test = repo.findByEmail("user1@gmail.com");
         assertNull(test.getToken());
         service.saveToken(test.getEmail(),"pass");
         assertNotNull(test.getToken());
@@ -127,7 +127,7 @@ public class TestServices {
     @Test
     public void assertSearch(){
 
-        XUser test = service.search("User1@gmail.com");
+        XUser test = service.search("user1@gmail.com");
         assertEquals("firstname1",test.getFirstname());
     }
 
@@ -135,10 +135,10 @@ public class TestServices {
     @Test
     @Transactional
     public void asserLogout(){
-        service.signin("User1@gmail.com","pass");
-        assertNotNull(repo.findByEmail("User1@gmail.com").getToken());
-        service.logout(repo.findByEmail("User1@gmail.com").getToken());
-        assertNull(repo.findByEmail("User1@gmail.com").getToken());
+        service.signin("user1@gmail.com","pass");
+        assertNotNull(repo.findByEmail("user1@gmail.com").getToken());
+        service.logout(repo.findByEmail("user1@gmail.com").getToken());
+        assertNull(repo.findByEmail("user1@gmail.com").getToken());
 
 
 
