@@ -25,7 +25,7 @@ public class PopulateService {
 
 
     private final PasswordEncoder passwordEncoder;
-    public static final int userNumber = 1000;
+    public static final int userNumber = 100000;
     @Autowired
     private XUserRepository repo;
     @Autowired

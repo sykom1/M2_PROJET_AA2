@@ -121,7 +121,7 @@
                     <td>
                         <strong>
                             <span class="glyphicon glyphicon-user  text-primary"></span>
-                            Name
+                            Prenom
                         </strong>
                     </td>
                     <td class="text-primary">
@@ -132,7 +132,7 @@
                     <td>
                         <strong>
                             <span class="glyphicon glyphicon-cloud text-primary"></span>
-                            Lastname
+                            Nom de famille
                         </strong>
                     </td>
                     <td class="text-primary">
@@ -222,7 +222,7 @@
                         <td>
                             <strong>
                                 <span class="glyphicon glyphicon-user  text-primary"></span>
-                                Title
+                                Titre
                             </strong>
                         </td>
                         <td class="text-primary">

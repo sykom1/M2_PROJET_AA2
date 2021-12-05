@@ -49,12 +49,12 @@ const myApp = {
                 headers: {'Content-Type': 'application/json'}
             });
         }
-        const promise1 = new Promise(() => {
-            this.getAll();
-        });
 
-        promise1.then();
-        this.refresh();
+        this.getAll();
+
+
+
+
 
     },
 
@@ -109,6 +109,8 @@ const myApp = {
                 }else{
                     this.nbPage = Math.floor(value) + 1;
                 }
+            }).then(()=> {
+                this.refresh()
             })
         },
         viewActivity : function (id){
